@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Research Studio</title>
+<title>Basic File Studio</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
 <style>
@@ -15,30 +15,31 @@
   --purple:#534AB7;--purple-light:#EEEDFE;
   --teal:#1D9E75;--teal-light:#E1F5EE;
   --amber:#BA7517;--amber-light:#FAEEDA;
-  --green:#3B6D11;--green-light:#EAF3DE;
   --red:#A32D2D;--radius:10px;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;}
 header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .logo{font-size:15px;font-weight:600;color:var(--purple);}
-.logo span{color:var(--text2);font-weight:400;}
+.logo span{color:var(--text2);font-weight:400;font-size:13px;}
 .header-spacer{flex:1;}
 #api-status{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--amber-light);color:var(--amber);border:1px solid #f0d090;}
 #api-status.ok{background:var(--teal-light);color:var(--teal);border-color:#9fd8c0;}
 .header-btn{font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);cursor:pointer;}
 .header-btn:hover{background:var(--bg3);}
 .app{display:flex;flex:1;overflow:hidden;}
-.sidebar{width:200px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
-.nav{padding:12px 8px;flex:1;}
-.nav-label{font-size:10px;color:var(--text3);padding:0 8px 6px;letter-spacing:.06em;text-transform:uppercase;}
+.sidebar{width:210px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.nav{padding:12px 8px;}
+.nav-label{font-size:10px;color:var(--text3);padding:0 8px 8px;letter-spacing:.06em;text-transform:uppercase;}
 .nav-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:background .15s;}
 .nav-btn:hover{background:var(--bg3);color:var(--text);}
 .nav-btn.active{background:var(--purple-light);color:var(--purple);font-weight:500;}
-.nav-btn svg{width:16px;height:16px;flex-shrink:0;}
-.file-area{padding:8px;border-top:1px solid var(--border);}
+.nav-btn svg{width:15px;height:15px;flex-shrink:0;}
+.file-area{padding:8px;border-top:1px solid var(--border);margin-top:auto;}
 .file-label{font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
-.file-list{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;max-height:120px;overflow-y:auto;}
-.file-item{display:flex;align-items:center;gap:6px;padding:5px 6px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text);}
+.file-list{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;max-height:140px;overflow-y:auto;}
+.file-item{display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text);cursor:pointer;transition:background .12s;}
+.file-item:hover{background:var(--purple-light);}
+.file-item.active-file{background:var(--purple-light);color:var(--purple);}
 .file-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
 .file-del{color:var(--text3);cursor:pointer;font-size:14px;line-height:1;flex-shrink:0;}
 .file-del:hover{color:var(--red);}
@@ -46,109 +47,88 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20p
 .upload-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-light);}
 #file-input{display:none;}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.panel{display:none;flex:1;flex-direction:column;overflow:hidden;}
-.panel.active{display:flex;}
-.panel-header{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
-.panel-title{font-size:14px;font-weight:500;flex:1;}
-.panel-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;font-size:12px;cursor:pointer;border:1px solid var(--border2);background:var(--bg2);color:var(--text);white-space:nowrap;}
-.panel-btn:hover{background:var(--bg3);}
-.panel-btn.primary{background:var(--purple);color:#fff;border-color:var(--purple);}
-.panel-btn.primary:hover{opacity:.88;}
-.panel-btn svg{width:14px;height:14px;}
+.chat-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .chat-area{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
 .msg{display:flex;gap:8px;}
 .msg.user{flex-direction:row-reverse;}
 .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
 .avatar.ai{background:var(--purple-light);color:var(--purple);}
 .avatar.user{background:var(--teal-light);color:var(--teal);}
-.bubble{max-width:82%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.65;}
+.bubble{max-width:80%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.65;}
 .msg.ai .bubble{background:var(--bg2);border:1px solid var(--border);color:var(--text);}
 .msg.user .bubble{background:var(--purple);color:#fff;}
 .bubble-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
-.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);white-space:nowrap;}
 .chip:hover{background:var(--bg3);color:var(--text);}
 .typing{display:flex;gap:4px;align-items:center;padding:2px 0;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:blink 1.2s infinite;}
 .dot:nth-child(2){animation-delay:.2s;}
 .dot:nth-child(3){animation-delay:.4s;}
 @keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
-.input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;background:var(--bg2);flex-shrink:0;}
+.input-area{padding:12px 16px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.input-row{display:flex;gap:8px;align-items:flex-end;}
 .input-row textarea{flex:1;resize:none;border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;min-height:40px;max-height:120px;}
 .input-row textarea:focus{border-color:var(--purple);}
 .send-btn{width:36px;height:36px;border-radius:8px;background:var(--purple);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .send-btn:hover{opacity:.85;}
-.send-btn svg{width:16px;height:16px;}
-.editor-toolbar{display:flex;align-items:center;gap:2px;padding:8px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--bg2);flex-shrink:0;}
-.tb-btn{width:28px;height:28px;border-radius:5px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:13px;}
-.tb-btn:hover{background:var(--bg3);color:var(--text);}
-.tb-sep{width:1px;height:18px;background:var(--border);margin:0 3px;}
-.editor-body{flex:1;padding:24px 32px;overflow-y:auto;outline:none;font-size:14px;line-height:1.8;color:var(--text);}
-.editor-body h1{font-size:22px;font-weight:600;margin-bottom:12px;}
-.editor-body h2{font-size:17px;font-weight:600;margin:18px 0 8px;}
-.editor-body p{margin-bottom:10px;}
-.editor-body table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px;}
-.editor-body th{background:var(--bg3);padding:7px 12px;text-align:left;border:1px solid var(--border);font-weight:500;}
-.editor-body td{padding:7px 12px;border:1px solid var(--border);}
-.editor-footer{padding:8px 16px;border-top:1px solid var(--border);display:flex;gap:6px;align-items:center;background:var(--bg2);flex-shrink:0;flex-wrap:wrap;}
-.editor-footer span{font-size:11px;color:var(--text3);}
-.excel-body{flex:1;padding:16px;overflow-y:auto;}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;}
-.stat-label{font-size:11px;color:var(--text2);margin-bottom:4px;}
-.stat-value{font-size:22px;font-weight:600;color:var(--text);}
-.stat-sub{font-size:11px;color:var(--teal);margin-top:2px;}
-.excel-table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
-.excel-table-title{padding:10px 14px;font-size:12px;font-weight:500;border-bottom:1px solid var(--border);background:var(--bg3);}
-.excel-table{width:100%;border-collapse:collapse;font-size:12px;}
-.excel-table th{background:var(--bg3);padding:7px 12px;text-align:left;border-bottom:1px solid var(--border);font-weight:500;color:var(--text2);}
-.excel-table td{padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);}
-.excel-table tr:last-child td{border-bottom:none;}
-.pos{color:var(--teal);}
-.action-chips{display:flex;gap:6px;flex-wrap:wrap;}
-.slides-layout{display:flex;flex:1;overflow:hidden;}
-.slide-thumbs{width:130px;border-right:1px solid var(--border);overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--bg2);}
-.thumb{aspect-ratio:16/9;border-radius:6px;padding:6px 8px;cursor:pointer;border:2px solid transparent;display:flex;flex-direction:column;justify-content:center;transition:border .15s;}
-.thumb.active{border-color:var(--purple);}
-.thumb-num{font-size:8px;opacity:.6;margin-bottom:3px;}
-.thumb-title{font-size:8px;font-weight:500;line-height:1.3;}
-.slide-preview{flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg3);padding:20px;overflow:hidden;}
-.slide-card{width:100%;max-width:460px;aspect-ratio:16/9;border-radius:10px;padding:28px 32px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.input-hint{font-size:11px;color:var(--text3);margin-top:6px;padding-left:2px;}
+.preview-panel{border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0;max-height:280px;display:none;flex-direction:column;}
+.preview-panel.show{display:flex;}
+.preview-header{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border);gap:8px;flex-shrink:0;}
+.preview-title{font-size:12px;font-weight:500;flex:1;color:var(--text2);}
+.preview-body{flex:1;overflow-y:auto;padding:14px 18px;font-size:13px;line-height:1.7;color:var(--text);}
+.preview-body h1{font-size:18px;font-weight:600;margin-bottom:8px;}
+.preview-body h2{font-size:15px;font-weight:600;margin:12px 0 6px;}
+.preview-body p{margin-bottom:8px;}
+.preview-body table{border-collapse:collapse;width:100%;font-size:12px;margin:8px 0;}
+.preview-body th{background:var(--bg3);padding:6px 10px;text-align:left;border:1px solid var(--border);font-weight:500;}
+.preview-body td{padding:6px 10px;border:1px solid var(--border);}
+.preview-btns{display:flex;gap:6px;padding:8px 14px;border-top:1px solid var(--border);flex-shrink:0;}
+.prev-btn{padding:6px 14px;border-radius:7px;font-size:12px;cursor:pointer;border:1px solid var(--border2);background:var(--bg2);color:var(--text);}
+.prev-btn:hover{background:var(--bg3);}
+.prev-btn.ok{background:var(--teal);color:#fff;border-color:var(--teal);}
+.prev-btn.ok:hover{opacity:.88;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;}
 .modal-overlay.show{display:flex;}
-.modal{background:var(--bg2);border-radius:16px;padding:28px;width:480px;max-width:92vw;}
-.modal h2{font-size:17px;font-weight:600;margin-bottom:6px;}
-.modal p{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
-.modal input{width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit;outline:none;margin-bottom:14px;color:var(--text);background:var(--bg);}
+.modal{background:var(--bg2);border-radius:16px;padding:26px;width:460px;max-width:92vw;}
+.modal h2{font-size:16px;font-weight:600;margin-bottom:6px;}
+.modal p{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;}
+.modal input{width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit;outline:none;margin-bottom:12px;color:var(--text);background:var(--bg);}
 .modal input:focus{border-color:var(--purple);}
-.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
-.modal-cancel{padding:8px 16px;border-radius:7px;border:1px solid var(--border2);background:var(--bg2);font-size:13px;cursor:pointer;color:var(--text);}
-.modal-save{padding:8px 16px;border-radius:7px;border:none;background:var(--purple);color:#fff;font-size:13px;cursor:pointer;font-weight:500;}
-.modal-save:hover{opacity:.88;}
-.format-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
-.format-card{border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;}
+.modal-cancel{padding:7px 14px;border-radius:7px;border:1px solid var(--border2);background:var(--bg2);font-size:13px;cursor:pointer;color:var(--text);}
+.modal-save{padding:7px 14px;border-radius:7px;border:none;background:var(--purple);color:#fff;font-size:13px;cursor:pointer;font-weight:500;}
+.format-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;}
+.format-card{border:2px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px;}
 .format-card:hover{border-color:var(--purple);background:var(--purple-light);}
 .format-card.selected{border-color:var(--purple);background:var(--purple-light);}
-.format-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.format-info{flex:1;}
-.format-name{font-size:13px;font-weight:500;color:var(--text);}
-.format-desc{font-size:11px;color:var(--text2);margin-top:2px;}
-.dest-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
-.dest-card{border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;}
+.format-icon{font-size:20px;flex-shrink:0;}
+.format-name{font-size:13px;font-weight:500;}
+.format-desc{font-size:11px;color:var(--text2);margin-top:1px;}
+.dest-list{display:flex;flex-direction:column;gap:7px;margin-bottom:6px;}
+.dest-card{border:2px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px;}
 .dest-card:hover{border-color:var(--purple);background:var(--purple-light);}
 .dest-card.selected{border-color:var(--purple);background:var(--purple-light);}
-.dest-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.dest-info{flex:1;}
-.dest-name{font-size:13px;font-weight:500;color:var(--text);}
-.dest-desc{font-size:11px;color:var(--text2);margin-top:2px;}
-.dest-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--teal-light);color:var(--teal);font-weight:500;}
-.save-steps{display:flex;align-items:center;gap:8px;margin-bottom:20px;}
-.step-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.dest-icon{font-size:20px;flex-shrink:0;}
+.dest-name{font-size:13px;font-weight:500;}
+.dest-desc{font-size:11px;color:var(--text2);margin-top:1px;}
+.save-steps{display:flex;align-items:center;gap:6px;margin-bottom:18px;}
+.step-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
 .step-dot.active{background:var(--purple);color:#fff;}
 .step-dot.done{background:var(--teal);color:#fff;}
 .step-dot.inactive{background:var(--bg3);color:var(--text3);}
 .step-line{flex:1;height:2px;background:var(--border);}
 .step-line.done{background:var(--teal);}
 .step-label{font-size:11px;color:var(--text2);}
+.home-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;gap:24px;}
+.home-title{font-size:22px;font-weight:600;color:var(--text);}
+.home-sub{font-size:14px;color:var(--text2);text-align:center;line-height:1.7;max-width:400px;}
+.home-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:480px;}
+.home-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:all .15s;text-align:left;}
+.home-card:hover{border-color:var(--purple);box-shadow:0 2px 12px rgba(83,74,183,.1);}
+.home-card-icon{font-size:24px;margin-bottom:8px;}
+.home-card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.home-card-desc{font-size:11px;color:var(--text2);line-height:1.5;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px;}
@@ -156,7 +136,7 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20p
 </head>
 <body>
 <header>
-  <div class="logo">AI Research Studio <span>β</span></div>
+  <div class="logo">Basic File Studio <span>β</span></div>
   <div class="header-spacer"></div>
   <div id="api-status">APIキー未設定</div>
   <button class="header-btn" onclick="openApiModal()">⚙ APIキー設定</button>
@@ -164,158 +144,91 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20p
 <div class="app">
   <div class="sidebar">
     <div class="nav">
-      <div class="nav-label">ツール</div>
-      <button class="nav-btn active" onclick="switchPanel('chat',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>調査・要約
-      </button>
-      <button class="nav-btn" onclick="switchPanel('doc',this)">
+      <div class="nav-label">作成する</div>
+      <button class="nav-btn" onclick="startNew('doc')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>ドキュメント
       </button>
-      <button class="nav-btn" onclick="switchPanel('excel',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>データ分析
+      <button class="nav-btn" onclick="startNew('excel')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>表計算・分析
       </button>
-      <button class="nav-btn" onclick="switchPanel('slides',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>スライド作成
+      <button class="nav-btn" onclick="startNew('slides')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>スライド・資料
       </button>
     </div>
     <div class="file-area">
-      <div class="file-label">読み込んだ資料</div>
+      <div class="file-label">ファイルを読み込む</div>
       <div class="file-list" id="file-list"></div>
-      <input type="file" id="file-input" multiple accept=".pdf,.txt,.csv,.xlsx,.xls,.docx,.md" onchange="handleFiles(this.files)">
+      <input type="file" id="file-input" multiple accept=".pdf,.txt,.csv,.xlsx,.xls,.docx,.md,.pptx" onchange="handleFiles(this.files)">
       <button class="upload-btn" onclick="document.getElementById('file-input').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        ファイルを追加
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        ファイルをアップロード
       </button>
     </div>
   </div>
-  <div class="main">
-    <div class="panel active" id="panel-chat">
-      <div class="panel-header">
-        <div class="panel-title">調査・要約チャット</div>
-        <button class="panel-btn" onclick="quickAction('アップロードした資料全体を要約してください')">全体要約</button>
-        <button class="panel-btn primary" onclick="quickAction('この内容をもとにExcelレポートを作成してください')">Excel化</button>
-      </div>
-      <div class="chat-area" id="chat-area">
-        <div class="msg ai">
-          <div class="avatar ai">AI</div>
-          <div>
-            <div class="bubble">こんにちは！AI Research Studioへようこそ。<br><br>まず右上の「APIキー設定」からClaude APIキーを入力してください。設定後は資料をアップロードして、何でも質問してみてください。</div>
-            <div class="bubble-chips">
-              <span class="chip" onclick="quickAction('資料の要点を箇条書きでまとめてください')">要点まとめ</span>
-              <span class="chip" onclick="quickAction('データをExcelで分析してください')">Excelで分析</span>
-              <span class="chip" onclick="quickAction('この内容でプレゼン資料を作成してください')">スライド作成</span>
-            </div>
-          </div>
+  <div class="main" id="main-area">
+    <div class="home-screen" id="home-screen">
+      <div class="home-title">何を作りますか？</div>
+      <div class="home-sub">左のメニューから作りたいものを選ぶか、ファイルをアップロードして編集・修正できます。チャットでやり取りしながら一緒に作ります。</div>
+      <div class="home-cards">
+        <div class="home-card" onclick="startNew('doc')">
+          <div class="home-card-icon">📄</div>
+          <div class="home-card-title">ドキュメントを作る</div>
+          <div class="home-card-desc">報告書・議事録・提案書など。チャットで内容を教えてください。</div>
+        </div>
+        <div class="home-card" onclick="startNew('excel')">
+          <div class="home-card-icon">📊</div>
+          <div class="home-card-title">表計算・分析</div>
+          <div class="home-card-desc">データ分析・集計表・グラフ入りExcelを作成します。</div>
+        </div>
+        <div class="home-card" onclick="startNew('slides')">
+          <div class="home-card-icon">🖥</div>
+          <div class="home-card-title">スライドを作る</div>
+          <div class="home-card-desc">プレゼン資料・提案スライドをPowerPoint形式で作成。</div>
+        </div>
+        <div class="home-card" onclick="document.getElementById('file-input').click()">
+          <div class="home-card-icon">📂</div>
+          <div class="home-card-title">ファイルを読み込む</div>
+          <div class="home-card-desc">既存のファイルをアップロードして、AIと一緒に修正・改善。</div>
         </div>
       </div>
-      <div class="input-row">
-        <textarea id="chat-input" placeholder="質問する、または「〇〇を作成して」と入力… (Shift+Enterで改行)" rows="1"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
-          oninput="this.style.height='40px';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
-        <button class="send-btn" onclick="sendChat()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
     </div>
-    <div class="panel" id="panel-doc">
-      <div class="panel-header">
-        <div class="panel-title">ドキュメント編集</div>
-        <button class="panel-btn primary" onclick="openSaveModal('doc')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          保存する
+    <div class="chat-wrap" id="chat-wrap" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;">
+        <button onclick="goHome()" style="font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>ホームに戻る
         </button>
-        <button class="panel-btn" onclick="aiImproveDoc()">✦ AI改善</button>
-      </div>
-      <div class="editor-toolbar">
-        <button class="tb-btn" onclick="fmt('bold')"><b>B</b></button>
-        <button class="tb-btn" onclick="fmt('italic')"><i>I</i></button>
-        <button class="tb-btn" onclick="fmt('underline')"><u>U</u></button>
-        <div class="tb-sep"></div>
-        <button class="tb-btn" onclick="fmtBlock('h1')">H1</button>
-        <button class="tb-btn" onclick="fmtBlock('h2')">H2</button>
-        <button class="tb-btn" onclick="fmtBlock('p')">¶</button>
-        <div class="tb-sep"></div>
-        <button class="tb-btn" onclick="fmt('insertUnorderedList')">≡</button>
-        <div class="tb-sep"></div>
-        <button class="tb-btn" onclick="document.execCommand('undo')">↩</button>
-        <button class="tb-btn" onclick="document.execCommand('redo')">↪</button>
-      </div>
-      <div class="editor-body" id="editor-body" contenteditable="true" spellcheck="false">
-        <h1>ドキュメントタイトル</h1>
-        <p>ここに内容を入力するか、チャットで「ドキュメントを作成して」と指示してください。</p>
-      </div>
-      <div class="editor-footer">
-        <span>テキストを選択してAIに修正を依頼できます</span>
+        <span style="font-size:13px;font-weight:500;color:var(--text);" id="chat-mode-title"></span>
         <span style="margin-left:auto;"></span>
-        <span class="chip" onclick="aiImproveDoc()">文体を整える</span>
-        <span class="chip" onclick="addDocSection()">セクション追加</span>
-      </div>
-    </div>
-    <div class="panel" id="panel-excel">
-      <div class="panel-header">
-        <div class="panel-title">データ分析 / 表計算</div>
-        <button class="panel-btn" onclick="quickAction('このデータを別の切り口で再分析してください')">再分析</button>
-        <button class="panel-btn primary" onclick="openSaveModal('excel')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          保存する
+        <button onclick="openSaveModal()" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;font-size:12px;cursor:pointer;border:none;background:var(--purple);color:#fff;font-weight:500;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>保存する
         </button>
       </div>
-      <div class="excel-body">
-        <div class="stat-grid">
-          <div class="stat-card"><div class="stat-label">総売上</div><div class="stat-value">¥12億</div><div class="stat-sub">↑ 前年比 +15%</div></div>
-          <div class="stat-card"><div class="stat-label">最高月</div><div class="stat-value">9月</div><div class="stat-sub">¥1.4億</div></div>
-          <div class="stat-card"><div class="stat-label">平均月売上</div><div class="stat-value">¥1億</div><div class="stat-sub">前年 ¥0.87億</div></div>
+      <div class="chat-area" id="chat-area"></div>
+      <div class="preview-panel" id="preview-panel">
+        <div class="preview-header">
+          <span class="preview-title" id="preview-title">📋 プレビュー</span>
+          <button onclick="closePreview()" style="font-size:18px;line-height:1;background:none;border:none;cursor:pointer;color:var(--text3);">×</button>
         </div>
-        <div class="excel-table-wrap">
-          <div class="excel-table-title">月別売上データ（サンプル）</div>
-          <table class="excel-table">
-            <thead><tr><th>月</th><th>売上（百万円）</th><th>前年同月</th><th>前年比</th></tr></thead>
-            <tbody id="excel-tbody">
-              <tr><td>1月</td><td>72</td><td>62</td><td class="pos">+16.1%</td></tr>
-              <tr><td>2月</td><td>68</td><td>60</td><td class="pos">+13.3%</td></tr>
-              <tr><td>3月</td><td>85</td><td>70</td><td class="pos">+21.4%</td></tr>
-              <tr><td>4月</td><td>90</td><td>78</td><td class="pos">+15.4%</td></tr>
-              <tr><td>5月</td><td>88</td><td>82</td><td class="pos">+7.3%</td></tr>
-              <tr><td>6月</td><td>95</td><td>80</td><td class="pos">+18.8%</td></tr>
-              <tr><td>7月</td><td>102</td><td>88</td><td class="pos">+15.9%</td></tr>
-              <tr><td>8月</td><td>98</td><td>90</td><td class="pos">+8.9%</td></tr>
-              <tr><td>9月</td><td>140</td><td>115</td><td class="pos">+21.7%</td></tr>
-              <tr><td>10月</td><td>115</td><td>98</td><td class="pos">+17.3%</td></tr>
-              <tr><td>11月</td><td>110</td><td>96</td><td class="pos">+14.6%</td></tr>
-              <tr><td>12月</td><td>137</td><td>118</td><td class="pos">+16.1%</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="action-chips">
-          <span class="chip" onclick="quickAction('このデータにピボットテーブルを追加してください')">ピボット追加</span>
-          <span class="chip" onclick="quickAction('前年比較グラフを追加してください')">比較グラフ</span>
-          <span class="chip" onclick="quickAction('来年の売上予測を追加してください')">予測分析</span>
+        <div class="preview-body" id="preview-body"></div>
+        <div class="preview-btns">
+          <button class="prev-btn" onclick="requestEdit()">✏ 修正を依頼する</button>
+          <button class="prev-btn ok" onclick="confirmOk()">✓ これで保存する</button>
         </div>
       </div>
-    </div>
-    <div class="panel" id="panel-slides">
-      <div class="panel-header">
-        <div class="panel-title">スライド作成</div>
-        <button class="panel-btn" onclick="addSlide()">＋ スライド追加</button>
-        <button class="panel-btn primary" onclick="openSaveModal('slides')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          保存する
-        </button>
-      </div>
-      <div class="slides-layout">
-        <div class="slide-thumbs" id="slide-thumbs"></div>
-        <div class="slide-preview"><div class="slide-card" id="slide-main"></div></div>
-      </div>
-      <div class="editor-footer">
-        <span>スライドを選択してAIに修正を依頼</span>
-        <span class="chip" onclick="quickAction('スライドのデザインを変更してください')">デザイン変更</span>
-        <span class="chip" onclick="quickAction('スライドを増やして詳細を追加してください')">詳細追加</span>
+      <div class="input-area">
+        <div class="input-row">
+          <textarea id="chat-input" placeholder="メッセージを入力… (Enterで送信、Shift+Enterで改行)" rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
+            oninput="this.style.height='40px';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+          <button class="send-btn" onclick="sendChat()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <div class="input-hint" id="input-hint"></div>
       </div>
     </div>
   </div>
 </div>
-
-<!-- APIキー設定モーダル -->
 <div class="modal-overlay" id="api-modal">
   <div class="modal">
     <h2>🔑 APIキー設定</h2>
@@ -327,23 +240,21 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20p
     </div>
   </div>
 </div>
-
-<!-- 保存モーダル -->
 <div class="modal-overlay" id="save-modal">
   <div class="modal">
     <div class="save-steps">
-      <div class="step-dot" id="step1-dot">1</div>
+      <div class="step-dot active" id="step1-dot">1</div>
       <div class="step-line" id="step1-line"></div>
       <div class="step-dot inactive" id="step2-dot">2</div>
       <span class="step-label" id="step-label">形式を選ぶ</span>
     </div>
     <div id="save-step1">
       <h2 id="save-title">保存形式を選んでください</h2>
-      <p id="save-subtitle">ファイルの種類を選択してください</p>
+      <p>ファイルの種類を選択してください</p>
       <div class="format-grid" id="format-grid"></div>
       <div class="modal-btns">
         <button class="modal-cancel" onclick="closeSaveModal()">キャンセル</button>
-        <button class="modal-save" onclick="goToStep2()">次へ →</button>
+        <button class="modal-save" onclick="goStep2()">次へ →</button>
       </div>
     </div>
     <div id="save-step2" style="display:none;">
@@ -351,158 +262,80 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20p
       <p>どこに保存しますか？</p>
       <div class="dest-list" id="dest-list"></div>
       <div class="modal-btns">
-        <button class="modal-cancel" onclick="backToStep1()">← 戻る</button>
+        <button class="modal-cancel" onclick="backStep1()">← 戻る</button>
         <button class="modal-save" onclick="executeSave()">保存する</button>
       </div>
     </div>
   </div>
 </div>
-
 <script>
 let apiKey=localStorage.getItem('claude_api_key')||'';
 let uploadedFiles=[];
-let currentSaveType='';
+let currentMode='';
+let currentFile=null;
+let conversationHistory=[];
+let latestContent='';
 let selectedFormat='';
 let selectedDest='';
-let slideData=[
-  {bg:'#534AB7',color:'#fff',title:'2024年度 事業報告',subtitle:'AI Research Studio',tag:'ANNUAL REPORT'},
-  {bg:'#ffffff',color:'#1a1a1a',title:'業績サマリー',subtitle:'総売上 ¥12億 / 前年比+15%',tag:'01'},
-  {bg:'#ffffff',color:'#1a1a1a',title:'部門別実績',subtitle:'全部門で前年超え達成',tag:'02'},
-  {bg:'#534AB7',color:'#fff',title:'来期の展望',subtitle:'目標：+20%成長',tag:'OUTLOOK'},
-];
-let currentSlide=0;
+const modeInfo={doc:{label:'ドキュメント作成',icon:'📄'},excel:{label:'表計算・データ分析',icon:'📊'},slides:{label:'スライド・プレゼン資料',icon:'🖥'}};
 const formats={
-  doc:[
-    {id:'gdoc',icon:'📄',name:'Google ドキュメント',desc:'Googleアカウントで編集・共有',color:'#1a73e8'},
-    {id:'word',icon:'📝',name:'Word (.docx)',desc:'Microsoft Wordで開いて編集',color:'#2b7cd3'},
-    {id:'pdf',icon:'📕',name:'PDF',desc:'印刷・配布に最適',color:'#e53935'},
-    {id:'txt',icon:'📃',name:'テキスト (.txt)',desc:'シンプルなテキスト形式',color:'#555'},
-  ],
-  excel:[
-    {id:'gsheet',icon:'📊',name:'Google スプレッドシート',desc:'Googleアカウントで編集・共有',color:'#0f9d58'},
-    {id:'xlsx',icon:'📗',name:'Excel (.xlsx)',desc:'Microsoft Excelで開いて編集',color:'#217346'},
-    {id:'csv',icon:'📋',name:'CSV (.csv)',desc:'どのアプリでも開ける汎用形式',color:'#555'},
-    {id:'pdf',icon:'📕',name:'PDF',desc:'印刷・配布に最適',color:'#e53935'},
-  ],
-  slides:[
-    {id:'gslide',icon:'🖥',name:'Google スライド',desc:'Googleアカウントで編集・共有',color:'#f4b400'},
-    {id:'pptx',icon:'📙',name:'PowerPoint (.pptx)',desc:'Microsoft PowerPointで編集',color:'#d24726'},
-    {id:'pdf',icon:'📕',name:'PDF',desc:'印刷・配布に最適',color:'#e53935'},
-  ],
+  doc:[{id:'gdoc',icon:'📄',name:'Google ドキュメント',desc:'Googleで編集・共有'},{id:'word',icon:'📝',name:'Word (.doc)',desc:'Microsoft Wordで編集'},{id:'pdf',icon:'📕',name:'PDF',desc:'印刷・配布に最適'},{id:'txt',icon:'📃',name:'テキスト (.txt)',desc:'シンプルなテキスト'}],
+  excel:[{id:'gsheet',icon:'📊',name:'Google スプレッドシート',desc:'Googleで編集・共有'},{id:'xlsx',icon:'📗',name:'Excel (.xlsx)',desc:'Microsoft Excelで編集'},{id:'csv',icon:'📋',name:'CSV (.csv)',desc:'汎用テキスト形式'},{id:'pdf',icon:'📕',name:'PDF',desc:'印刷・配布に最適'}],
+  slides:[{id:'gslide',icon:'🖥',name:'Google スライド',desc:'Googleで編集・共有'},{id:'pptx',icon:'📙',name:'PowerPoint (.pptx)',desc:'PowerPointで編集'},{id:'pdf',icon:'📕',name:'PDF',desc:'印刷・配布に最適'}],
 };
-const destinations={
-  google:{icon:'☁️',name:'Googleドライブに保存',desc:'Googleアカウントに自動保存されます',badge:'クラウド'},
-  download:{icon:'💾',name:'このPCにダウンロード',desc:'ダウンロードフォルダに保存されます',badge:'ローカル'},
+const systemPrompts={
+  doc:`あなたはプロのドキュメント作成アシスタントです。日本語で回答してください。ユーザーと会話しながら、報告書・提案書・議事録などのドキュメントを作成します。まず目的や内容を確認し、必要な情報をユーザーに質問しながら進めてください。ドキュメントの内容が確定したら、必ず以下の形式で出力してください：
+---PREVIEW_START---
+<h1>タイトル</h1><h2>セクション</h2><p>内容</p>
+---PREVIEW_END---
+上記のブロック以外に本文を含めないでください。プレビュー前に一言添えてOKです。`,
+  excel:`あなたはプロのデータ分析・表計算アシスタントです。日本語で回答してください。ユーザーと会話しながら、データ分析・集計表・レポートを作成します。まず何のデータを扱うか、どんな表や分析が必要かを質問してください。表データが確定したら、必ず以下の形式で出力してください：
+---PREVIEW_START---
+<h2>タイトル</h2><table><thead><tr><th>列1</th><th>列2</th></tr></thead><tbody><tr><td>データ</td><td>データ</td></tr></tbody></table>
+---PREVIEW_END---`,
+  slides:`あなたはプロのプレゼン資料作成アシスタントです。日本語で回答してください。ユーザーと会話しながら、スライド・プレゼン資料を作成します。まずテーマ・目的・枚数・対象者などを確認してください。スライド内容が確定したら、必ず以下の形式で出力してください：
+---PREVIEW_START---
+<h2>スライド1：タイトル</h2><p>内容・箇条書き</p><h2>スライド2：タイトル</h2><p>内容・箇条書き</p>
+---PREVIEW_END---`,
 };
-window.onload=()=>{updateApiStatus();renderThumbs();showSlide(0);if(!apiKey)setTimeout(openApiModal,800);};
+const uploadPrompts={
+  doc:(n,c)=>`ユーザーがドキュメントファイル「${n}」をアップロードしました。内容：\n\n${c.slice(0,4000)}\n\nこのファイルの内容を読んで、「どこをどう修正したいですか？」と聞いてください。`,
+  excel:(n,c)=>`ユーザーがデータファイル「${n}」をアップロードしました。内容：\n\n${c.slice(0,4000)}\n\nこのファイルのデータを読んで、「どんな分析や修正をしたいですか？」と聞いてください。`,
+  slides:(n,c)=>`ユーザーがプレゼンファイル「${n}」をアップロードしました。内容：\n\n${c.slice(0,4000)}\n\nこのファイルの内容を読んで、「どのスライドをどう修正したいですか？」と聞いてください。`,
+};
+window.onload=()=>{updateApiStatus();if(!apiKey)setTimeout(openApiModal,800);};
 function openApiModal(){document.getElementById('api-key-input').value=apiKey;document.getElementById('api-modal').classList.add('show');}
 function closeApiModal(){document.getElementById('api-modal').classList.remove('show');}
 function saveApiKey(){const k=document.getElementById('api-key-input').value.trim();if(!k){alert('APIキーを入力してください');return;}apiKey=k;localStorage.setItem('claude_api_key',k);updateApiStatus();closeApiModal();}
 function updateApiStatus(){const e=document.getElementById('api-status');if(apiKey){e.textContent='✓ API接続済み';e.classList.add('ok');}else{e.textContent='APIキー未設定';e.classList.remove('ok');}}
-function switchPanel(name,btn){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+name).classList.add('active');btn.classList.add('active');}
-function handleFiles(files){Array.from(files).forEach(f=>{const r=new FileReader();r.onload=e=>{uploadedFiles.push({name:f.name,content:e.target.result});renderFileList();};r.readAsText(f);});}
-function renderFileList(){document.getElementById('file-list').innerHTML=uploadedFiles.map((f,i)=>`<div class="file-item"><span class="file-name">📄 ${f.name}</span><span class="file-del" onclick="removeFile(${i})">×</span></div>`).join('');}
+function goHome(){document.getElementById('home-screen').style.display='flex';document.getElementById('chat-wrap').style.display='none';currentMode='';currentFile=null;conversationHistory=[];latestContent='';}
+function showChat(mode){currentMode=mode;conversationHistory=[];latestContent='';document.getElementById('home-screen').style.display='none';document.getElementById('chat-wrap').style.display='flex';document.getElementById('chat-area').innerHTML='';closePreview();const info=modeInfo[mode];document.getElementById('chat-mode-title').textContent=info.icon+' '+info.label;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));}
+function startNew(mode){if(!apiKey){openApiModal();return;}showChat(mode);document.getElementById('input-hint').textContent='AIと会話しながら作成します。まず内容や目的を教えてください。';const greetings={doc:'どんなドキュメントを作りますか？\n\n例えば「営業報告書」「会議の議事録」「新サービスの提案書」など、目的を教えてください。どんな内容を盛り込みたいかも教えていただけると助かります！',excel:'どんな表やデータ分析を作りますか？\n\n例えば「月別売上集計」「在庫管理表」「アンケート集計」など、何のデータを扱いたいか教えてください。',slides:'どんなプレゼン資料を作りますか？\n\nテーマと、誰に向けた資料か教えてください。例：「新商品の社内提案、5枚程度」「営業成績の報告、10枚」など。'};addAiMessage(greetings[mode]);}
+function handleFiles(files){Array.from(files).forEach(f=>{const r=new FileReader();r.onload=e=>{const fo={name:f.name,content:e.target.result,type:f.type};uploadedFiles.push(fo);renderFileList();openFileChat(fo);};r.readAsText(f);});}
+function renderFileList(){document.getElementById('file-list').innerHTML=uploadedFiles.map((f,i)=>`<div class="file-item ${currentFile&&currentFile.name===f.name?'active-file':''}" onclick="openFileChat(uploadedFiles[${i}])"><span class="file-name">📄 ${f.name}</span><span class="file-del" onclick="event.stopPropagation();removeFile(${i})">×</span></div>`).join('');}
 function removeFile(i){uploadedFiles.splice(i,1);renderFileList();}
-function openSaveModal(type){
-  currentSaveType=type;selectedFormat='';selectedDest='';
-  const titles={doc:'ドキュメントの保存形式',excel:'表計算の保存形式',slides:'スライドの保存形式'};
-  document.getElementById('save-title').textContent=titles[type];
-  document.getElementById('format-grid').innerHTML=formats[type].map(f=>`<div class="format-card" id="fmt-${f.id}" onclick="selectFormat('${f.id}')"><div class="format-icon" style="background:${f.color}20">${f.icon}</div><div class="format-info"><div class="format-name">${f.name}</div><div class="format-desc">${f.desc}</div></div></div>`).join('');
-  document.getElementById('save-step1').style.display='block';
-  document.getElementById('save-step2').style.display='none';
-  document.getElementById('step1-dot').className='step-dot active';
-  document.getElementById('step2-dot').className='step-dot inactive';
-  document.getElementById('step1-line').className='step-line';
-  document.getElementById('step-label').textContent='形式を選ぶ';
-  document.getElementById('save-modal').classList.add('show');
-}
-function selectFormat(id){selectedFormat=id;document.querySelectorAll('.format-card').forEach(c=>c.classList.remove('selected'));document.getElementById('fmt-'+id).classList.add('selected');}
-function goToStep2(){
-  if(!selectedFormat){alert('保存形式を選んでください');return;}
-  const isGoogle=['gdoc','gsheet','gslide'].includes(selectedFormat);
-  const dests=isGoogle?[{id:'google',...destinations.google}]:[{id:'download',...destinations.download},{id:'google',...destinations.google}];
-  document.getElementById('dest-list').innerHTML=dests.map(d=>`<div class="dest-card" id="dest-${d.id}" onclick="selectDest('${d.id}')"><div class="dest-icon">${d.icon}</div><div class="dest-info"><div class="dest-name">${d.name}</div><div class="dest-desc">${d.desc}</div></div><span class="dest-badge">${d.badge}</span></div>`).join('');
-  if(isGoogle)selectDest('google');
-  document.getElementById('save-step1').style.display='none';
-  document.getElementById('save-step2').style.display='block';
-  document.getElementById('step1-dot').className='step-dot done';
-  document.getElementById('step2-dot').className='step-dot active';
-  document.getElementById('step1-line').className='step-line done';
-  document.getElementById('step-label').textContent='保存先を選ぶ';
-}
-function selectDest(id){selectedDest=id;document.querySelectorAll('.dest-card').forEach(c=>c.classList.remove('selected'));document.getElementById('dest-'+id).classList.add('selected');}
-function backToStep1(){document.getElementById('save-step1').style.display='block';document.getElementById('save-step2').style.display='none';document.getElementById('step1-dot').className='step-dot active';document.getElementById('step2-dot').className='step-dot inactive';document.getElementById('step1-line').className='step-line';document.getElementById('step-label').textContent='形式を選ぶ';}
-function closeSaveModal(){document.getElementById('save-modal').classList.remove('show');}
-function executeSave(){
-  if(!selectedDest){alert('保存先を選んでください');return;}
-  const isGoogle=['gdoc','gsheet','gslide'].includes(selectedFormat);
-  if(isGoogle||selectedDest==='google'){
-    const urls={gdoc:'https://docs.google.com/document/create',gsheet:'https://sheets.google.com/create',gslide:'https://slides.google.com/create'};
-    const url=urls[selectedFormat]||'https://drive.google.com';
-    closeSaveModal();
-    if(confirm('Googleのページが開きます。内容をコピーして貼り付けてください。\nOKをクリックすると開きます。'))window.open(url,'_blank');
-    return;
-  }
-  closeSaveModal();
-  if(currentSaveType==='doc')saveDoc();
-  else if(currentSaveType==='excel')saveExcel();
-  else if(currentSaveType==='slides')saveSlides();
-}
-function saveDoc(){
-  if(selectedFormat==='pdf'){window.print();return;}
-  if(selectedFormat==='word'){const html=document.getElementById('editor-body').innerHTML;const blob=new Blob([`<html><head><meta charset="utf-8"><style>body{font-family:Arial;margin:40px;}</style></head><body>${html}</body></html>`],{type:'application/msword'});dlFile(blob,'document.doc');return;}
-  const blob=new Blob([document.getElementById('editor-body').innerText],{type:'text/plain;charset=utf-8'});dlFile(blob,'document.txt');
-}
-function saveExcel(){
-  if(selectedFormat==='pdf'){window.print();return;}
-  if(selectedFormat==='csv'){let csv='月,売上（百万円）,前年同月,前年比\n';document.querySelectorAll('#excel-tbody tr').forEach(tr=>{csv+=Array.from(tr.cells).map(td=>td.textContent).join(',')+'\n';});dlFile(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),'data.csv');return;}
-  const wb=XLSX.utils.book_new();
-  const rows=[['月','売上（百万円）','前年同月','前年比']];
-  document.querySelectorAll('#excel-tbody tr').forEach(tr=>{rows.push(Array.from(tr.cells).map(td=>td.textContent));});
-  const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:8},{wch:14},{wch:10},{wch:10}];
-  XLSX.utils.book_append_sheet(wb,'売上データ',ws);
-  XLSX.utils.book_append_sheet(wb,'サマリー',XLSX.utils.aoa_to_sheet([['指標','値'],['総売上','¥12億'],['最高月','9月'],['前年比','+15%']]));
-  XLSX.writeFile(wb,'report.xlsx');
-}
-function saveSlides(){
-  if(selectedFormat==='pdf'){window.print();return;}
-  const pptx=new PptxGenJS();pptx.layout='LAYOUT_16x9';
-  slideData.forEach(s=>{const slide=pptx.addSlide();slide.background={color:s.bg.replace('#','')};slide.addText(s.tag,{x:0.4,y:0.3,w:9,h:0.3,fontSize:9,color:s.color.replace('#',''),transparency:40,fontFace:'Arial'});slide.addText(s.title,{x:0.4,y:0.8,w:9,h:1.2,fontSize:28,color:s.color.replace('#',''),bold:true,fontFace:'Arial'});slide.addText(s.subtitle,{x:0.4,y:2.2,w:9,h:0.6,fontSize:14,color:s.color.replace('#',''),transparency:20,fontFace:'Arial'});});
-  pptx.writeFile({fileName:'presentation.pptx'});
-}
-function dlFile(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
-function quickAction(text){document.getElementById('chat-input').value=text;sendChat();}
-async function sendChat(){
-  if(!apiKey){openApiModal();return;}
-  const input=document.getElementById('chat-input');const text=input.value.trim();if(!text)return;
-  input.value='';input.style.height='40px';
-  addMessage('user',text);const loadId=addLoading();
-  let context='';if(uploadedFiles.length>0)context='\n\n【アップロードされた資料】\n'+uploadedFiles.map(f=>`--- ${f.name} ---\n${f.content.slice(0,3000)}`).join('\n\n');
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:`あなたは優秀なAIリサーチアシスタントです。日本語で回答してください。資料の要約・分析・検索を行い、必要に応じてExcelやPowerPoint作成の提案もします。回答は簡潔で実用的にしてください。${context}`,messages:[{role:'user',content:text}]})});
-    const data=await res.json();removeLoading(loadId);
-    if(data.error){addMessage('ai','エラー: '+data.error.message);return;}
-    const reply=data.content[0].text;addMessage('ai',reply,true);
-    if(text.includes('Excel')||text.includes('エクセル'))setTimeout(()=>switchPanel('excel',document.querySelectorAll('.nav-btn')[2]),500);
-    if(text.includes('スライド')||text.includes('プレゼン')||text.includes('PowerPoint'))setTimeout(()=>switchPanel('slides',document.querySelectorAll('.nav-btn')[3]),500);
-    if(text.includes('ドキュメント')||text.includes('文書')||text.includes('レポート')){document.getElementById('editor-body').innerHTML=`<h1>AIが生成したドキュメント</h1><p>${reply.replace(/\n/g,'</p><p>')}</p>`;setTimeout(()=>switchPanel('doc',document.querySelectorAll('.nav-btn')[1]),500);}
-  }catch(e){removeLoading(loadId);addMessage('ai','通信エラーが発生しました。APIキーとネットワーク接続を確認してください。');}
-}
-function addMessage(role,text,chips=false){
-  const area=document.getElementById('chat-area');const div=document.createElement('div');div.className='msg '+role;
-  const c=chips&&role==='ai'?`<div class="bubble-chips"><span class="chip" onclick="openSaveModal('excel')">Excelで保存</span><span class="chip" onclick="openSaveModal('slides')">PPTで保存</span><span class="chip" onclick="openSaveModal('doc')">ドキュメントで保存</span></div>`:'';
-  div.innerHTML=`<div class="avatar ${role}">${role==='ai'?'AI':'私'}</div><div><div class="bubble">${text.replace(/\n/g,'<br>')}</div>${c}</div>`;
-  area.appendChild(div);area.scrollTop=area.scrollHeight;
-}
+function openFileChat(fo){if(!apiKey){openApiModal();return;}currentFile=fo;const ext=fo.name.split('.').pop().toLowerCase();if(['xlsx','xls','csv'].includes(ext))currentMode='excel';else if(['pptx','ppt'].includes(ext))currentMode='slides';else currentMode='doc';showChat(currentMode);renderFileList();document.getElementById('chat-mode-title').textContent='📂 '+fo.name+' を編集中';document.getElementById('input-hint').textContent='ファイルの内容をAIが読み込みました。どこを修正するか伝えてください。';conversationHistory=[{role:'user',content:uploadPrompts[currentMode](fo.name,fo.content)}];callAI();}
+async function sendChat(){if(!apiKey){openApiModal();return;}const input=document.getElementById('chat-input');const text=input.value.trim();if(!text)return;input.value='';input.style.height='40px';addUserMessage(text);conversationHistory.push({role:'user',content:text});callAI();}
+async function callAI(){const loadId=addLoading();try{const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,system:systemPrompts[currentMode],messages:conversationHistory})});const data=await res.json();removeLoading(loadId);if(data.error){addAiMessage('エラー: '+data.error.message);return;}const reply=data.content[0].text;conversationHistory.push({role:'assistant',content:reply});if(reply.includes('---PREVIEW_START---')){const match=reply.match(/---PREVIEW_START---([\s\S]*?)---PREVIEW_END---/);if(match){const pre=match[1].trim();latestContent=pre;const before=reply.split('---PREVIEW_START---')[0].trim();if(before)addAiMessage(before);showPreview(pre);return;}}addAiMessage(reply);}catch(e){removeLoading(loadId);addAiMessage('通信エラーが発生しました。APIキーとネットワーク接続を確認してください。');}}
+function addAiMessage(text,chips){const area=document.getElementById('chat-area');const div=document.createElement('div');div.className='msg ai';const ch=chips?`<div class="bubble-chips">${chips.map(c=>`<span class="chip" onclick="${c.action}">${c.label}</span>`).join('')}</div>`:'';div.innerHTML=`<div class="avatar ai">AI</div><div><div class="bubble">${text.replace(/\n/g,'<br>')}</div>${ch}</div>`;area.appendChild(div);area.scrollTop=area.scrollHeight;}
+function addUserMessage(text){const area=document.getElementById('chat-area');const div=document.createElement('div');div.className='msg user';div.innerHTML=`<div class="avatar user">私</div><div class="bubble">${text.replace(/\n/g,'<br>')}</div>`;area.appendChild(div);area.scrollTop=area.scrollHeight;}
 function addLoading(){const id='load-'+Date.now();const area=document.getElementById('chat-area');const div=document.createElement('div');div.className='msg ai';div.id=id;div.innerHTML=`<div class="avatar ai">AI</div><div class="bubble"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;area.appendChild(div);area.scrollTop=area.scrollHeight;return id;}
 function removeLoading(id){const el=document.getElementById(id);if(el)el.remove();}
-function fmt(cmd){document.execCommand(cmd,false,null);}
-function fmtBlock(tag){document.execCommand('formatBlock',false,tag);}
-async function aiImproveDoc(){if(!apiKey){openApiModal();return;}const body=document.getElementById('editor-body');const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:`以下をプロフェッショナルなビジネス文体に改善してください。HTMLで返してください（h1,h2,p,tableタグ使用）:\n\n${body.innerText}`}]})});const data=await res.json();if(data.content)body.innerHTML=data.content[0].text;}
-function addDocSection(){document.getElementById('editor-body').innerHTML+='<h2>新しいセクション</h2><p>ここに内容を入力してください。</p>';}
-function renderThumbs(){document.getElementById('slide-thumbs').innerHTML=slideData.map((s,i)=>`<div class="thumb ${i===currentSlide?'active':''}" style="background:${s.bg}" onclick="showSlide(${i})"><div class="thumb-num" style="color:${s.color};opacity:.6">Slide ${i+1}</div><div class="thumb-title" style="color:${s.color}">${s.title}</div></div>`).join('');}
-function showSlide(i){currentSlide=i;const s=slideData[i];const m=document.getElementById('slide-main');m.style.background=s.bg;m.innerHTML=`<div style="position:absolute;right:-20px;bottom:-20px;width:140px;height:140px;border-radius:50%;background:rgba(128,128,128,.06)"></div><div style="font-size:10px;color:${s.color};opacity:.6;margin-bottom:8px;letter-spacing:.1em">${s.tag}</div><div style="font-size:clamp(14px,3.5vw,22px);font-weight:600;color:${s.color};line-height:1.3;margin-bottom:10px">${s.title}</div><div style="font-size:12px;color:${s.color};opacity:.8">${s.subtitle}</div>`;renderThumbs();}
-function addSlide(){slideData.push({bg:'#f8f7f4',color:'#1a1a1a',title:'新しいスライド',subtitle:'内容を追加してください',tag:`0${slideData.length+1}`});showSlide(slideData.length-1);}
+function showPreview(html){document.getElementById('preview-body').innerHTML=html;document.getElementById('preview-title').textContent='📋 プレビュー — 内容を確認してください';document.getElementById('preview-panel').classList.add('show');addAiMessage('上にプレビューを表示しました。内容を確認して「これで保存する」か「修正を依頼する」を選んでください。',[{label:'✏ 修正を依頼する',action:'requestEdit()'},{label:'✓ これで保存する',action:'confirmOk()'}]);}
+function closePreview(){document.getElementById('preview-panel').classList.remove('show');}
+function requestEdit(){closePreview();addAiMessage('どこをどう修正しますか？具体的に教えてください。');}
+function confirmOk(){closePreview();openSaveModal();}
+function openSaveModal(){if(!latestContent){addAiMessage('まだ保存できるコンテンツがありません。先にAIと会話してコンテンツを作成してください。');return;}selectedFormat='';selectedDest='';const mode=currentMode||'doc';const titles={doc:'ドキュメントの保存形式',excel:'表計算の保存形式',slides:'スライドの保存形式'};document.getElementById('save-title').textContent=titles[mode];document.getElementById('format-grid').innerHTML=formats[mode].map(f=>`<div class="format-card" id="fmt-${f.id}" onclick="selectFormat('${f.id}')"><div class="format-icon">${f.icon}</div><div><div class="format-name">${f.name}</div><div class="format-desc">${f.desc}</div></div></div>`).join('');document.getElementById('save-step1').style.display='block';document.getElementById('save-step2').style.display='none';document.getElementById('step1-dot').className='step-dot active';document.getElementById('step2-dot').className='step-dot inactive';document.getElementById('step1-line').className='step-line';document.getElementById('step-label').textContent='形式を選ぶ';document.getElementById('save-modal').classList.add('show');}
+function closeSaveModal(){document.getElementById('save-modal').classList.remove('show');}
+function selectFormat(id){selectedFormat=id;document.querySelectorAll('.format-card').forEach(c=>c.classList.remove('selected'));document.getElementById('fmt-'+id).classList.add('selected');}
+function goStep2(){if(!selectedFormat){alert('保存形式を選んでください');return;}const isG=['gdoc','gsheet','gslide'].includes(selectedFormat);const dests=isG?[{id:'google',icon:'☁️',name:'Googleドライブに保存',desc:'Googleアカウントに自動保存'}]:[{id:'download',icon:'💾',name:'このPCにダウンロード',desc:'ダウンロードフォルダに保存'},{id:'google',icon:'☁️',name:'Googleドライブに保存',desc:'Googleアカウントに保存'}];document.getElementById('dest-list').innerHTML=dests.map(d=>`<div class="dest-card" id="dest-${d.id}" onclick="selectDest('${d.id}')"><div class="dest-icon">${d.icon}</div><div><div class="dest-name">${d.name}</div><div class="dest-desc">${d.desc}</div></div></div>`).join('');if(isG)selectDest('google');document.getElementById('save-step1').style.display='none';document.getElementById('save-step2').style.display='block';document.getElementById('step1-dot').className='step-dot done';document.getElementById('step2-dot').className='step-dot active';document.getElementById('step1-line').className='step-line done';document.getElementById('step-label').textContent='保存先を選ぶ';}
+function selectDest(id){selectedDest=id;document.querySelectorAll('.dest-card').forEach(c=>c.classList.remove('selected'));document.getElementById('dest-'+id).classList.add('selected');}
+function backStep1(){document.getElementById('save-step1').style.display='block';document.getElementById('save-step2').style.display='none';document.getElementById('step1-dot').className='step-dot active';document.getElementById('step2-dot').className='step-dot inactive';document.getElementById('step1-line').className='step-line';document.getElementById('step-label').textContent='形式を選ぶ';}
+function executeSave(){if(!selectedDest){alert('保存先を選んでください');return;}const isG=['gdoc','gsheet','gslide'].includes(selectedFormat);if(isG||selectedDest==='google'){const urls={gdoc:'https://docs.google.com/document/create',gsheet:'https://sheets.google.com/create',gslide:'https://slides.google.com/create'};closeSaveModal();if(confirm('Googleのページが開きます。内容をコピーして貼り付けてください。\nOKをクリックすると開きます。'))window.open(urls[selectedFormat]||'https://drive.google.com','_blank');return;}closeSaveModal();if(currentMode==='excel')doSaveExcel();else if(currentMode==='slides')doSaveSlides();else doSaveDoc();}
+function doSaveDoc(){const c=latestContent||'';if(selectedFormat==='pdf'){window.print();return;}if(selectedFormat==='word'){dlFile(new Blob([`<html><head><meta charset="utf-8"><style>body{font-family:Arial;margin:40px;}</style></head><body>${c}</body></html>`],{type:'application/msword'}),'document.doc');return;}const t=document.createElement('div');t.innerHTML=c;dlFile(new Blob([t.innerText],{type:'text/plain;charset=utf-8'}),'document.txt');}
+function doSaveExcel(){if(selectedFormat==='pdf'){window.print();return;}const t=document.createElement('div');t.innerHTML=latestContent;const tables=t.querySelectorAll('table');if(!tables.length){dlFile(new Blob(['\uFEFF'+t.innerText],{type:'text/csv;charset=utf-8'}),'data.csv');return;}if(selectedFormat==='csv'){let csv='';tables[0].querySelectorAll('tr').forEach(tr=>{csv+=Array.from(tr.cells).map(td=>'"'+td.textContent.trim()+'"').join(',')+'\n';});dlFile(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),'data.csv');return;}const wb=XLSX.utils.book_new();tables.forEach((table,idx)=>{const rows=[];table.querySelectorAll('tr').forEach(tr=>{rows.push(Array.from(tr.cells).map(td=>td.textContent.trim()));});XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'シート'+(idx+1));});XLSX.writeFile(wb,'report.xlsx');}
+function doSaveSlides(){if(selectedFormat==='pdf'){window.print();return;}const t=document.createElement('div');t.innerHTML=latestContent;const pptx=new PptxGenJS();pptx.layout='LAYOUT_16x9';const h2s=t.querySelectorAll('h2');if(!h2s.length){const slide=pptx.addSlide();slide.background={color:'534AB7'};slide.addText(t.innerText,{x:0.5,y:1,w:9,h:4,fontSize:18,color:'ffffff',fontFace:'Arial'});}else{h2s.forEach(h2=>{const slide=pptx.addSlide();slide.background={color:'534AB7'};slide.addText(h2.textContent,{x:0.5,y:0.5,w:9,h:1.2,fontSize:26,color:'ffffff',bold:true,fontFace:'Arial'});let body='';let el=h2.nextElementSibling;while(el&&el.tagName!=='H2'){body+=el.innerText+'\n';el=el.nextElementSibling;}if(body.trim())slide.addText(body.trim(),{x:0.5,y:2,w:9,h:3.5,fontSize:14,color:'ffffff',fontFace:'Arial'});});}pptx.writeFile({fileName:'presentation.pptx'});}
+function dlFile(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeApiModal();closeSaveModal();}});
 </script>
 </body>
