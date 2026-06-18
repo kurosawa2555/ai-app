@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Research Studio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f8f7f4;--bg2:#ffffff;--bg3:#f0efe9;
+  --text:#1a1a1a;--text2:#6b6a64;--text3:#9e9d97;
+  --border:#e0dfd8;--border2:#c8c7c0;
+  --purple:#534AB7;--purple-light:#EEEDFE;
+  --teal:#1D9E75;--teal-light:#E1F5EE;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --green:#3B6D11;--green-light:#EAF3DE;
+  --red:#A32D2D;--radius:10px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;}
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.logo{font-size:15px;font-weight:600;color:var(--purple);}
+.logo span{color:var(--text2);font-weight:400;}
+.header-spacer{flex:1;}
+#api-status{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--amber-light);color:var(--amber);border:1px solid #f0d090;}
+#api-status.ok{background:var(--teal-light);color:var(--teal);border-color:#9fd8c0;}
+.header-btn{font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);cursor:pointer;}
+.header-btn:hover{background:var(--bg3);}
+.app{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:200px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.nav{padding:12px 8px;flex:1;}
+.nav-label{font-size:10px;color:var(--text3);padding:0 8px 6px;letter-spacing:.06em;text-transform:uppercase;}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:background .15s;}
+.nav-btn:hover{background:var(--bg3);color:var(--text);}
+.nav-btn.active{background:var(--purple-light);color:var(--purple);font-weight:500;}
+.nav-btn svg{width:16px;height:16px;flex-shrink:0;}
+.file-area{padding:8px;border-top:1px solid var(--border);}
+.file-label{font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+.file-list{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;max-height:120px;overflow-y:auto;}
+.file-item{display:flex;align-items:center;gap:6px;padding:5px 6px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text);}
+.file-item svg{width:13px;height:13px;flex-shrink:0;color:var(--text2);}
+.file-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.file-del{color:var(--text3);cursor:pointer;font-size:14px;line-height:1;flex-shrink:0;}
+.file-del:hover{color:var(--red);}
+.upload-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;border:1.5px dashed var(--border2);border-radius:8px;background:none;cursor:pointer;font-size:12px;color:var(--text3);transition:all .15s;}
+.upload-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-light);}
+#file-input{display:none;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.panel{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.panel.active{display:flex;}
+.panel-header{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.panel-title{font-size:14px;font-weight:500;flex:1;}
+.panel-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;font-size:12px;cursor:pointer;border:1px solid var(--border2);background:var(--bg2);color:var(--text);white-space:nowrap;}
+.panel-btn:hover{background:var(--bg3);}
+.panel-btn.primary{background:var(--purple);color:#fff;border-color:var(--purple);}
+.panel-btn.primary:hover{opacity:.88;}
+.panel-btn svg{width:14px;height:14px;}
+.chat-area{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.msg{display:flex;gap:8px;}
+.msg.user{flex-direction:row-reverse;}
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.avatar.ai{background:var(--purple-light);color:var(--purple);}
+.avatar.user{background:var(--teal-light);color:var(--teal);}
+.bubble{max-width:82%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.65;}
+.msg.ai .bubble{background:var(--bg2);border:1px solid var(--border);color:var(--text);}
+.msg.user .bubble{background:var(--purple);color:#fff;}
+.bubble-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);}
+.chip:hover{background:var(--bg3);color:var(--text);}
+.chip svg{width:12px;height:12px;}
+.typing{display:flex;gap:4px;align-items:center;padding:2px 0;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:blink 1.2s infinite;}
+.dot:nth-child(2){animation-delay:.2s;}
+.dot:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;background:var(--bg2);flex-shrink:0;}
+.input-row textarea{flex:1;resize:none;border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;min-height:40px;max-height:120px;}
+.input-row textarea:focus{border-color:var(--purple);}
+.send-btn{width:36px;height:36px;border-radius:8px;background:var(--purple);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.send-btn:hover{opacity:.85;}
+.send-btn svg{width:16px;height:16px;}
+.editor-toolbar{display:flex;align-items:center;gap:2px;padding:8px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--bg2);flex-shrink:0;}
+.tb-btn{width:28px;height:28px;border-radius:5px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+.tb-btn:hover{background:var(--bg3);color:var(--text);}
+.tb-sep{width:1px;height:18px;background:var(--border);margin:0 3px;}
+.editor-body{flex:1;padding:24px 32px;overflow-y:auto;outline:none;font-size:14px;line-height:1.8;color:var(--text);}
+.editor-body h1{font-size:22px;font-weight:600;margin-bottom:12px;}
+.editor-body h2{font-size:17px;font-weight:600;margin:18px 0 8px;}
+.editor-body p{margin-bottom:10px;}
+.editor-body table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px;}
+.editor-body th{background:var(--bg3);padding:7px 12px;text-align:left;border:1px solid var(--border);font-weight:500;}
+.editor-body td{padding:7px 12px;border:1px solid var(--border);}
+.editor-footer{padding:8px 16px;border-top:1px solid var(--border);display:flex;gap:6px;align-items:center;background:var(--bg2);flex-shrink:0;}
+.editor-footer span{font-size:11px;color:var(--text3);}
+.excel-body{flex:1;padding:16px;overflow-y:auto;}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;}
+.stat-label{font-size:11px;color:var(--text2);margin-bottom:4px;}
+.stat-value{font-size:22px;font-weight:600;color:var(--text);}
+.stat-sub{font-size:11px;color:var(--teal);margin-top:2px;}
+.excel-table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
+.excel-table-title{padding:10px 14px;font-size:12px;font-weight:500;border-bottom:1px solid var(--border);background:var(--bg3);}
+.excel-table{width:100%;border-collapse:collapse;font-size:12px;}
+.excel-table th{background:var(--bg3);padding:7px 12px;text-align:left;border-bottom:1px solid var(--border);font-weight:500;color:var(--text2);}
+.excel-table td{padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text);}
+.excel-table tr:last-child td{border-bottom:none;}
+.pos{color:var(--teal);}
+.action-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.slides-layout{display:flex;flex:1;overflow:hidden;}
+.slide-thumbs{width:130px;border-right:1px solid var(--border);overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--bg2);}
+.thumb{aspect-ratio:16/9;border-radius:6px;padding:6px 8px;cursor:pointer;border:2px solid transparent;display:flex;flex-direction:column;justify-content:center;transition:border .15s;}
+.thumb.active{border-color:var(--purple);}
+.thumb-num{font-size:8px;opacity:.6;margin-bottom:3px;}
+.thumb-title{font-size:8px;font-weight:500;line-height:1.3;}
+.slide-preview{flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg3);padding:20px;overflow:hidden;}
+.slide-card{width:100%;max-width:460px;aspect-ratio:16/9;border-radius:10px;padding:28px 32px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--bg2);border-radius:14px;padding:28px;width:440px;max-width:90vw;}
+.modal h2{font-size:17px;font-weight:600;margin-bottom:6px;}
+.modal p{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;}
+.modal input{width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit;outline:none;margin-bottom:14px;color:var(--text);background:var(--bg);}
+.modal input:focus{border-color:var(--purple);}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+.modal-cancel{padding:8px 16px;border-radius:7px;border:1px solid var(--border2);background:var(--bg2);font-size:13px;cursor:pointer;color:var(--text);}
+.modal-save{padding:8px 16px;border-radius:7px;border:none;background:var(--purple);color:#fff;font-size:13px;cursor:pointer;font-weight:500;}
+.modal-save:hover{opacity:.88;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">AI Research Studio <span>β</span></div>
+  <div class="header-spacer"></div>
+  <div id="api-status">APIキー未設定</div>
+  <button class="header-btn" onclick="openModal()">⚙ APIキー設定</button>
+</header>
+<div class="app">
+  <div class="sidebar">
+    <div class="nav">
+      <div class="nav-label">ツール</div>
+      <button class="nav-btn active" onclick="switchPanel('chat',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        調査・要約
+      </button>
+      <button class="nav-btn" onclick="switchPanel('doc',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        ドキュメント
+      </button>
+      <button class="nav-btn" onclick="switchPanel('excel',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        データ分析
+      </button>
+      <button class="nav-btn" onclick="switchPanel('slides',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        スライド作成
+      </button>
+    </div>
+    <div class="file-area">
+      <div class="file-label">読み込んだ資料</div>
+      <div class="file-list" id="file-list"></div>
+      <input type="file" id="file-input" multiple accept=".pdf,.txt,.csv,.xlsx,.xls,.docx,.md" onchange="handleFiles(this.files)">
+      <button class="upload-btn" onclick="document.getElementById('file-input').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        ファイルを追加
+      </button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="panel active" id="panel-chat">
+      <div class="panel-header">
+        <div class="panel-title">調査・要約チャット</div>
+        <button class="panel-btn" onclick="quickAction('アップロードした資料全体を要約してください')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          全体要約
+        </button>
+        <button class="panel-btn primary" onclick="quickAction('この内容をもとにExcelレポートを作成してください')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          Excel化
+        </button>
+      </div>
+      <div class="chat-area" id="chat-area">
+        <div class="msg ai">
+          <div class="avatar ai">AI</div>
+          <div>
+            <div class="bubble">
+              こんにちは！AI Research Studioへようこそ。<br><br>
+              まず右上の「APIキー設定」からClaude APIキーを入力してください。設定後は資料をアップロードして、何でも質問してみてください。要約・検索・分析、Excel・PowerPoint作成まで対応します。
+            </div>
+            <div class="bubble-chips">
+              <span class="chip" onclick="quickAction('資料の要点を箇条書きでまとめてください')">要点まとめ</span>
+              <span class="chip" onclick="quickAction('データをExcelファイルで分析してください')">Excelで分析</span>
+              <span class="chip" onclick="quickAction('この内容でプレゼン資料を作成してください')">スライド作成</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="input-row">
+        <textarea id="chat-input" placeholder="質問する、または「〇〇を作成して」と入力… (Shift+Enterで改行)" rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
+          oninput="this.style.height='40px';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+        <button class="send-btn" onclick="sendChat()" aria-label="送信">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="panel" id="panel-doc">
+      <div class="panel-header">
+        <div class="panel-title">ドキュメント編集</div>
+        <button class="panel-btn" onclick="downloadDoc()">テキスト保存</button>
+        <button class="panel-btn primary" onclick="aiImproveDoc()">✦ AI改善</button>
+      </div>
+      <div class="editor-toolbar">
+        <button class="tb-btn" onclick="fmt('bold')"><b>B</b></button>
+        <button class="tb-btn" onclick="fmt('italic')"><i>I</i></button>
+        <button class="tb-btn" onclick="fmt('underline')"><u>U</u></button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" onclick="fmtBlock('h1')">H1</button>
+        <button class="tb-btn" onclick="fmtBlock('h2')">H2</button>
+        <button class="tb-btn" onclick="fmtBlock('p')">¶</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" onclick="fmt('insertUnorderedList')">≡</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" onclick="document.execCommand('undo')">↩</button>
+        <button class="tb-btn" onclick="document.execCommand('redo')">↪</button>
+      </div>
+      <div class="editor-body" id="editor-body" contenteditable="true" spellcheck="false">
+        <h1>ドキュメントタイトル</h1>
+        <p>ここに内容を入力するか、チャットで「ドキュメントを作成して」と指示してください。AIが自動で内容を生成し、このエディタに書き込みます。</p>
+      </div>
+      <div class="editor-footer">
+        <span>テキストを選択してAIに修正を依頼できます</span>
+        <span style="margin-left:auto;"></span>
+        <span class="chip" onclick="aiImproveDoc()">文体を整える</span>
+        <span class="chip" onclick="addDocSection()">セクション追加</span>
+      </div>
+    </div>
+    <div class="panel" id="panel-excel">
+      <div class="panel-header">
+        <div class="panel-title">データ分析 / Excel</div>
+        <button class="panel-btn" onclick="quickAction('このデータを別の切り口で再分析してください')">再分析</button>
+        <button class="panel-btn primary" onclick="downloadExcel()">Excelで保存</button>
+      </div>
+      <div class="excel-body">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label">総売上</div><div class="stat-value">¥12億</div><div class="stat-sub">↑ 前年比 +15%</div></div>
+          <div class="stat-card"><div class="stat-label">最高月</div><div class="stat-value">9月</div><div class="stat-sub">¥1.4億</div></div>
+          <div class="stat-card"><div class="stat-label">平均月売上</div><div class="stat-value">¥1億</div><div class="stat-sub">前年 ¥0.87億</div></div>
+        </div>
+        <div class="excel-table-wrap">
+          <div class="excel-table-title">月別売上データ（サンプル）</div>
+          <table class="excel-table">
+            <thead><tr><th>月</th><th>売上（百万円）</th><th>前年同月</th><th>前年比</th></tr></thead>
+            <tbody id="excel-tbody">
+              <tr><td>1月</td><td>72</td><td>62</td><td class="pos">+16.1%</td></tr>
+              <tr><td>2月</td><td>68</td><td>60</td><td class="pos">+13.3%</td></tr>
+              <tr><td>3月</td><td>85</td><td>70</td><td class="pos">+21.4%</td></tr>
+              <tr><td>4月</td><td>90</td><td>78</td><td class="pos">+15.4%</td></tr>
+              <tr><td>5月</td><td>88</td><td>82</td><td class="pos">+7.3%</td></tr>
+              <tr><td>6月</td><td>95</td><td>80</td><td class="pos">+18.8%</td></tr>
+              <tr><td>7月</td><td>102</td><td>88</td><td class="pos">+15.9%</td></tr>
+              <tr><td>8月</td><td>98</td><td>90</td><td class="pos">+8.9%</td></tr>
+              <tr><td>9月</td><td>140</td><td>115</td><td class="pos">+21.7%</td></tr>
+              <tr><td>10月</td><td>115</td><td>98</td><td class="pos">+17.3%</td></tr>
+              <tr><td>11月</td><td>110</td><td>96</td><td class="pos">+14.6%</td></tr>
+              <tr><td>12月</td><td>137</td><td>118</td><td class="pos">+16.1%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="action-chips">
+          <span class="chip" onclick="quickAction('このデータにピボットテーブルを追加してください')">ピボット追加</span>
+          <span class="chip" onclick="quickAction('前年比較グラフを追加してください')">比較グラフ</span>
+          <span class="chip" onclick="quickAction('来年の売上予測を追加してください')">予測分析</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="panel-slides">
+      <div class="panel-header">
+        <div class="panel-title">スライド作成</div>
+        <button class="panel-btn" onclick="addSlide()">＋ スライド追加</button>
+        <button class="panel-btn primary" onclick="downloadPptx()">PPT保存</button>
+      </div>
+      <div class="slides-layout">
+        <div class="slide-thumbs" id="slide-thumbs"></div>
+        <div class="slide-preview">
+          <div class="slide-card" id="slide-main"></div>
+        </div>
+      </div>
+      <div class="editor-footer">
+        <span>スライドを選択してAIに修正を依頼</span>
+        <span class="chip" onclick="quickAction('スライドのデザインを変更してください')">デザイン変更</span>
+        <span class="chip" onclick="quickAction('スライドを増やして詳細を追加してください')">詳細追加</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>🔑 APIキー設定</h2>
+    <p>Anthropic APIキーを入力してください。<br>キーは <code>sk-ant-</code> で始まる文字列です。<br>設定はこのブラウザにのみ保存されます。</p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="modal-save" onclick="saveApiKey()">保存する</button>
+    </div>
+  </div>
+</div>
+<script>
+let apiKey=localStorage.getItem('claude_api_key')||'';
+let uploadedFiles=[];
+let slideData=[
+  {bg:'#534AB7',color:'#fff',title:'2024年度 事業報告',subtitle:'AI Research Studio',tag:'ANNUAL REPORT'},
+  {bg:'#ffffff',color:'#1a1a1a',title:'業績サマリー',subtitle:'総売上 ¥12億 / 前年比+15%',tag:'01'},
+  {bg:'#ffffff',color:'#1a1a1a',title:'部門別実績',subtitle:'全部門で前年超え達成',tag:'02'},
+  {bg:'#534AB7',color:'#fff',title:'来期の展望',subtitle:'目標：+20%成長',tag:'OUTLOOK'},
+];
+let currentSlide=0;
+window.onload=()=>{updateApiStatus();renderThumbs();showSlide(0);if(!apiKey)setTimeout(openModal,800);};
+function openModal(){document.getElementById('api-key-input').value=apiKey;document.getElementById('modal').classList.add('show');}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+function saveApiKey(){const k=document.getElementById('api-key-input').value.trim();if(!k){alert('APIキーを入力してください');return;}apiKey=k;localStorage.setItem('claude_api_key',k);updateApiStatus();closeModal();}
+function updateApiStatus(){const e=document.getElementById('api-status');if(apiKey){e.textContent='✓ API接続済み';e.classList.add('ok');}else{e.textContent='APIキー未設定';e.classList.remove('ok');}}
+function switchPanel(name,btn){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+name).classList.add('active');btn.classList.add('active');}
+function handleFiles(files){Array.from(files).forEach(f=>{const r=new FileReader();r.onload=e=>{uploadedFiles.push({name:f.name,content:e.target.result});renderFileList();};r.readAsText(f);});}
+function renderFileList(){document.getElementById('file-list').innerHTML=uploadedFiles.map((f,i)=>`<div class="file-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="file-name">${f.name}</span><span class="file-del" onclick="removeFile(${i})">×</span></div>`).join('');}
+function removeFile(i){uploadedFiles.splice(i,1);renderFileList();}
+function quickAction(text){document.getElementById('chat-input').value=text;sendChat();}
+async function sendChat(){
+  if(!apiKey){openModal();return;}
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text)return;
+  input.value='';input.style.height='40px';
+  addMessage('user',text);
+  const loadId=addLoading();
+  let context='';
+  if(uploadedFiles.length>0){context='\n\n【アップロードされた資料】\n'+uploadedFiles.map(f=>`--- ${f.name} ---\n${f.content.slice(0,3000)}`).join('\n\n');}
+  const sys=`あなたは優秀なAIリサーチアシスタントです。日本語で回答してください。資料の要約・分析・検索を行い、必要に応じてExcelやPowerPoint作成の提案もします。回答は簡潔で実用的にしてください。${context}`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:sys,messages:[{role:'user',content:text}]})});
+    const data=await res.json();
+    removeLoading(loadId);
+    if(data.error){addMessage('ai','エラー: '+data.error.message);return;}
+    const reply=data.content[0].text;
+    addMessage('ai',reply,true);
+    if(text.includes('Excel')||text.includes('エクセル')||text.includes('表')){setTimeout(()=>{switchPanel('excel',document.querySelectorAll('.nav-btn')[2]);},500);}
+    if(text.includes('スライド')||text.includes('プレゼン')||text.includes('PowerPoint')){setTimeout(()=>{switchPanel('slides',document.querySelectorAll('.nav-btn')[3]);},500);}
+    if(text.includes('ドキュメント')||text.includes('文書')||text.includes('レポート')){const ed=document.getElementById('editor-body');ed.innerHTML=`<h1>AIが生成したドキュメント</h1><p>${reply.replace(/\n/g,'</p><p>')}</p>`;setTimeout(()=>{switchPanel('doc',document.querySelectorAll('.nav-btn')[1]);},500);}
+  }catch(e){removeLoading(loadId);addMessage('ai','通信エラーが発生しました。APIキーとネットワーク接続を確認してください。');}
+}
+function addMessage(role,text,chips=false){
+  const area=document.getElementById('chat-area');
+  const div=document.createElement('div');
+  div.className='msg '+role;
+  const c=chips&&role==='ai'?`<div class="bubble-chips"><span class="chip" onclick="downloadExcel()">Excelで保存</span><span class="chip" onclick="downloadPptx()">PPTで保存</span><span class="chip" onclick="switchPanel('doc',document.querySelectorAll('.nav-btn')[1])">ドキュメントで見る</span></div>`:'';
+  div.innerHTML=`<div class="avatar ${role}">${role==='ai'?'AI':'私'}</div><div><div class="bubble">${text.replace(/\n/g,'<br>')}</div>${c}</div>`;
+  area.appendChild(div);area.scrollTop=area.scrollHeight;
+}
+function addLoading(){const id='load-'+Date.now();const area=document.getElementById('chat-area');const div=document.createElement('div');div.className='msg ai';div.id=id;div.innerHTML=`<div class="avatar ai">AI</div><div class="bubble"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;area.appendChild(div);area.scrollTop=area.scrollHeight;return id;}
+function removeLoading(id){const el=document.getElementById(id);if(el)el.remove();}
+function fmt(cmd){document.execCommand(cmd,false,null);}
+function fmtBlock(tag){document.execCommand('formatBlock',false,tag);}
+function downloadDoc(){const text=document.getElementById('editor-body').innerText;const blob=new Blob([text],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='document.txt';a.click();}
+async function aiImproveDoc(){if(!apiKey){openModal();return;}const body=document.getElementById('editor-body');const text=body.innerText;const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:`以下の文章をプロフェッショナルなビジネス文体に改善してください。HTMLで返してください（h1,h2,p,tableタグ使用）:\n\n${text}`}]})});const data=await res.json();if(data.content)body.innerHTML=data.content[0].text;}
+function addDocSection(){document.getElementById('editor-body').innerHTML+='<h2>新しいセクション</h2><p>ここに内容を入力してください。</p>';}
+function downloadExcel(){const wb=XLSX.utils.book_new();const rows=[['月','売上（百万円）','前年同月','前年比']];document.querySelectorAll('#excel-tbody tr').forEach(tr=>{rows.push(Array.from(tr.cells).map(td=>td.textContent));});const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:8},{wch:14},{wch:10},{wch:10}];XLSX.utils.book_append_sheet(wb,'売上データ',ws);const sum=[['指標','値'],['総売上','¥12億'],['最高月','9月 ¥1.4億'],['前年比','+15%']];XLSX.utils.book_append_sheet(wb,'サマリー',XLSX.utils.aoa_to_sheet(sum));XLSX.writeFile(wb,'ai_research_report.xlsx');}
+function renderThumbs(){const el=document.getElementById('slide-thumbs');el.innerHTML=slideData.map((s,i)=>`<div class="thumb ${i===currentSlide?'active':''}" style="background:${s.bg}" onclick="showSlide(${i})"><div class="thumb-num" style="color:${s.color};opacity:.6">Slide ${i+1}</div><div class="thumb-title" style="color:${s.color}">${s.title}</div></div>`).join('');}
+function showSlide(i){currentSlide=i;const s=slideData[i];const m=document.getElementById('slide-main');m.style.background=s.bg;m.innerHTML=`<div style="position:absolute;right:-20px;bottom:-20px;width:140px;height:140px;border-radius:50%;background:rgba(128,128,128,.06)"></div><div style="font-size:10px;color:${s.color};opacity:.6;margin-bottom:8px;letter-spacing:.1em">${s.tag}</div><div style="font-size:clamp(14px,3.5vw,22px);font-weight:600;color:${s.color};line-height:1.3;margin-bottom:10px">${s.title}</div><div style="font-size:12px;color:${s.color};opacity:.8">${s.subtitle}</div>`;renderThumbs();}
+function addSlide(){slideData.push({bg:'#f8f7f4',color:'#1a1a1a',title:'新しいスライド',subtitle:'内容を追加してください',tag:`0${slideData.length+1}`});showSlide(slideData.length-1);}
+function downloadPptx(){const pptx=new PptxGenJS();pptx.layout='LAYOUT_16x9';slideData.forEach(s=>{const slide=pptx.addSlide();slide.background={color:s.bg.replace('#','')};slide.addText(s.tag,{x:0.4,y:0.3,w:9,h:0.3,fontSize:9,color:s.color.replace('#',''),transparency:40,fontFace:'Arial'});slide.addText(s.title,{x:0.4,y:0.8,w:9,h:1.2,fontSize:28,color:s.color.replace('#',''),bold:true,fontFace:'Arial'});slide.addText(s.subtitle,{x:0.4,y:2.2,w:9,h:0.6,fontSize:14,color:s.color.replace('#',''),transparency:20,fontFace:'Arial'});});pptx.writeFile({fileName:'ai_research_presentation.pptx'});}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+</script>
+</body>
+</html>
