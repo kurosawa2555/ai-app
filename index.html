@@ -8,10 +8,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#f8f7f4;--bg2:#fff;--bg3:#f0efe9;--text:#1a1a1a;--text2:#6b6a64;--text3:#9e9d97;--border:#e0dfd8;--border2:#c8c7c0;--purple:#534AB7;--pl:#EEEDFE;--teal:#1D9E75;--tl:#E1F5EE;--amber:#BA7517;--al:#FAEEDA;--red:#A32D2D;--r:10px;}
+:root{--bg:#f8f7f4;--bg2:#fff;--bg3:#f0efe9;--text:#1a1a1a;--text2:#6b6a64;--text3:#9e9d97;--border:#e0dfd8;--border2:#c8c7c0;--purple:#534AB7;--pl:#EEEDFE;--teal:#1D9E75;--tl:#E1F5EE;--amber:#BA7517;--al:#FAEEDA;--red:#A32D2D;--rl:#FCEBEB;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:50px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.logo{font-size:14px;font-weight:700;color:var(--purple);letter-spacing:-.3px;}
+.logo{font-size:14px;font-weight:700;color:var(--purple);}
 .logo span{color:var(--text2);font-weight:400;font-size:12px;}
 .hsp{flex:1;}
 #api-status{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--al);color:var(--amber);border:1px solid #f0d090;}
@@ -19,55 +19,91 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16p
 .hbtn{font-size:12px;padding:5px 11px;border-radius:6px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);cursor:pointer;}
 .hbtn:hover{background:var(--bg3);}
 .app{display:flex;flex:1;overflow:hidden;}
-.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
-.sb-section{padding:10px 8px 4px;}
-.sb-label{font-size:10px;color:var(--text3);padding:0 8px 6px;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;}
-.sb-label button{font-size:16px;line-height:1;background:none;border:none;cursor:pointer;color:var(--text3);padding:0;}
-.sb-label button:hover{color:var(--purple);}
-.nav-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:background .12s;}
-.nav-btn:hover{background:var(--bg3);color:var(--text);}
-.nav-btn svg{width:15px;height:15px;flex-shrink:0;}
-.lib-area{flex:1;overflow-y:auto;padding:4px 8px;}
-.lib-empty{font-size:11px;color:var(--text3);padding:8px 10px;text-align:center;line-height:1.6;}
+.sidebar{width:230px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+.sb-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sb-tab{flex:1;padding:10px 4px;font-size:11px;text-align:center;cursor:pointer;color:var(--text2);border:none;background:none;transition:all .12s;border-bottom:2px solid transparent;}
+.sb-tab.active{color:var(--purple);border-bottom-color:var(--purple);font-weight:500;}
+.sb-tab:hover{background:var(--bg3);}
+.sb-pane{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.sb-pane.active{display:flex;}
+.proj-list{flex:1;overflow-y:auto;padding:6px;}
+.proj-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);transition:background .12s;border:1px solid transparent;}
+.proj-item:hover{background:var(--bg3);}
+.proj-item.active{background:var(--pl);color:var(--purple);border-color:#c8c5f0;}
+.proj-item-icon{font-size:16px;flex-shrink:0;}
+.proj-item-info{flex:1;overflow:hidden;}
+.proj-item-name{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.proj-item-meta{font-size:10px;color:var(--text3);margin-top:1px;}
+.proj-item-del{opacity:0;color:var(--text3);cursor:pointer;font-size:14px;}
+.proj-item:hover .proj-item-del{opacity:1;}
+.proj-item-del:hover{color:var(--red);}
+.proj-add-btn{margin:6px;padding:9px;border:1.5px dashed var(--border2);border-radius:8px;background:none;cursor:pointer;font-size:12px;color:var(--text3);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;}
+.proj-add-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--pl);}
+.artifact-list{flex:1;overflow-y:auto;padding:6px;}
+.artifact-item{padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--bg2);margin-bottom:4px;transition:all .12s;}
+.artifact-item:hover{border-color:var(--purple);background:var(--pl);}
+.artifact-item-header{display:flex;align-items:center;gap:6px;}
+.artifact-icon{font-size:16px;}
+.artifact-name{font-size:12px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.artifact-del{opacity:0;color:var(--text3);cursor:pointer;font-size:13px;}
+.artifact-item:hover .artifact-del{opacity:1;}
+.artifact-del:hover{color:var(--red);}
+.artifact-meta{font-size:10px;color:var(--text3);margin-top:3px;}
+.artifact-proj{font-size:10px;color:var(--purple);background:var(--pl);padding:1px 6px;border-radius:10px;display:inline-block;margin-top:3px;}
+.artifact-empty{font-size:11px;color:var(--text3);text-align:center;padding:16px 8px;line-height:1.6;}
+.lib-area{flex:1;overflow-y:auto;padding:4px 6px;}
+.lib-empty{font-size:11px;color:var(--text3);padding:12px 8px;text-align:center;line-height:1.6;}
 .lib-item{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:7px;font-size:12px;color:var(--text);cursor:pointer;transition:background .12s;border:1px solid transparent;}
 .lib-item:hover{background:var(--bg3);}
-.lib-item.selected{background:var(--pl);border-color:#c8c5f0;color:var(--purple);}
-.lib-item-icon{font-size:14px;flex-shrink:0;}
+.lib-item.inuse{background:var(--pl);border-color:#c8c5f0;color:var(--purple);}
+.lib-item-icon{font-size:13px;flex-shrink:0;}
 .lib-item-info{flex:1;overflow:hidden;}
-.lib-item-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;}
+.lib-item-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;font-size:12px;}
 .lib-item-size{font-size:10px;color:var(--text3);}
-.lib-item-del{color:var(--text3);cursor:pointer;font-size:14px;flex-shrink:0;opacity:0;}
+.lib-item-del{opacity:0;color:var(--text3);cursor:pointer;font-size:13px;flex-shrink:0;}
 .lib-item:hover .lib-item-del{opacity:1;}
 .lib-item-del:hover{color:var(--red);}
-.upload-area{padding:8px;border-top:1px solid var(--border);flex-shrink:0;}
-.upload-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;border:1.5px dashed var(--border2);border-radius:8px;background:none;cursor:pointer;font-size:12px;color:var(--text3);transition:all .15s;}
+.upload-area{padding:6px;border-top:1px solid var(--border);flex-shrink:0;}
+.upload-btn{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;padding:8px;border:1.5px dashed var(--border2);border-radius:8px;background:none;cursor:pointer;font-size:12px;color:var(--text3);transition:all .15s;}
 .upload-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--pl);}
 #file-input{display:none;}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.home-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;gap:20px;overflow-y:auto;}
-.home-title{font-size:20px;font-weight:700;}
-.home-sub{font-size:13px;color:var(--text2);text-align:center;line-height:1.7;max-width:380px;}
-.home-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:460px;}
-.home-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s;}
-.home-card:hover{border-color:var(--purple);box-shadow:0 2px 12px rgba(83,74,183,.1);}
-.home-card-icon{font-size:22px;margin-bottom:6px;}
-.home-card-title{font-size:13px;font-weight:600;margin-bottom:3px;}
-.home-card-desc{font-size:11px;color:var(--text2);line-height:1.5;}
+.home-screen{flex:1;overflow-y:auto;padding:24px;}
+.home-proj-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.home-proj-title{font-size:16px;font-weight:600;}
+.home-proj-add{font-size:12px;padding:6px 14px;border-radius:7px;border:1px solid var(--border2);background:var(--bg2);cursor:pointer;color:var(--purple);}
+.home-proj-add:hover{background:var(--pl);}
+.proj-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px;}
+.proj-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s;}
+.proj-card:hover{border-color:var(--purple);box-shadow:0 2px 12px rgba(83,74,183,.1);}
+.proj-card.active-proj{border-color:var(--purple);background:var(--pl);}
+.proj-card-icon{font-size:24px;margin-bottom:8px;}
+.proj-card-name{font-size:13px;font-weight:600;margin-bottom:3px;}
+.proj-card-meta{font-size:11px;color:var(--text2);}
+.home-actions-title{font-size:14px;font-weight:600;margin-bottom:12px;}
+.home-action-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:24px;}
+.home-action-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px;}
+.home-action-card:hover{border-color:var(--purple);box-shadow:0 2px 8px rgba(83,74,183,.08);}
+.home-action-icon{font-size:20px;flex-shrink:0;}
+.home-action-title{font-size:13px;font-weight:500;}
+.home-action-desc{font-size:11px;color:var(--text2);margin-top:2px;}
+.no-proj-hint{background:var(--al);border:1px solid #f0d090;border-radius:10px;padding:14px 16px;font-size:13px;color:var(--amber);margin-bottom:16px;}
 .chat-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .chat-topbar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
 .back-btn{font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;}
 .back-btn:hover{background:var(--bg3);}
 .chat-mode-title{font-size:13px;font-weight:500;flex:1;}
+.chat-proj-badge{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--pl);color:var(--purple);}
 .save-btn{display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;font-size:12px;cursor:pointer;border:none;background:var(--purple);color:#fff;font-weight:500;}
 .save-btn:hover{opacity:.88;}
-.doc-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+.doc-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;}
 .doc-bar-label{font-size:11px;color:var(--text2);font-weight:500;flex-shrink:0;}
 .doc-chips{display:flex;gap:5px;flex-wrap:wrap;flex:1;}
-.doc-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);}
+.doc-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;background:var(--bg2);border:1px solid var(--border2);}
 .doc-chip.lib{background:var(--pl);border-color:#c8c5f0;color:var(--purple);}
 .doc-chip-del{cursor:pointer;color:var(--text3);margin-left:2px;}
 .doc-chip-del:hover{color:var(--red);}
-.doc-bar-add{font-size:11px;color:var(--purple);cursor:pointer;background:none;border:1px dashed #c8c5f0;border-radius:20px;padding:3px 10px;white-space:nowrap;}
+.doc-bar-add{font-size:11px;color:var(--purple);cursor:pointer;background:none;border:1px dashed #c8c5f0;border-radius:20px;padding:3px 10px;white-space:nowrap;flex-shrink:0;}
 .doc-bar-add:hover{background:var(--pl);}
 #chat-file-input{display:none;}
 .chat-area{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
@@ -111,7 +147,23 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16p
 .input-tools{display:flex;gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap;}
 .input-tool-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);background:none;border:1px solid var(--border);border-radius:20px;padding:3px 9px;cursor:pointer;transition:all .12s;}
 .input-tool-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--pl);}
-.input-hint{font-size:11px;color:var(--text3);margin-left:auto;}
+.analysis-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.analysis-topbar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.analysis-body{flex:1;overflow-y:auto;padding:20px;}
+.analysis-title{font-size:16px;font-weight:600;margin-bottom:6px;}
+.analysis-sub{font-size:13px;color:var(--text2);margin-bottom:16px;}
+.analysis-doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:16px;}
+.analysis-doc-card{border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all .12s;text-align:center;}
+.analysis-doc-card:hover{border-color:var(--purple);}
+.analysis-doc-card.selected{border-color:var(--purple);background:var(--pl);}
+.analysis-doc-card-icon{font-size:24px;margin-bottom:6px;}
+.analysis-doc-card-name{font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.analysis-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.analysis-action-btn{padding:8px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--bg2);font-size:12px;cursor:pointer;transition:all .12s;}
+.analysis-action-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--pl);}
+.analysis-action-btn.primary{background:var(--purple);color:#fff;border-color:var(--purple);}
+.analysis-action-btn.primary:hover{opacity:.88;}
+.analysis-result{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:13px;line-height:1.7;white-space:pre-wrap;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;}
 .modal-overlay.show{display:flex;}
 .modal{background:var(--bg2);border-radius:16px;padding:24px;width:460px;max-width:92vw;}
@@ -125,25 +177,19 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16p
 .format-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;}
 .format-card{border:2px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:9px;}
 .format-card:hover,.format-card.selected{border-color:var(--purple);background:var(--pl);}
-.fi{font-size:18px;flex-shrink:0;}
-.fn{font-size:13px;font-weight:500;}
-.fd{font-size:11px;color:var(--text2);margin-top:1px;}
+.fi{font-size:18px;flex-shrink:0;}.fn{font-size:13px;font-weight:500;}.fd{font-size:11px;color:var(--text2);margin-top:1px;}
 .dest-list{display:flex;flex-direction:column;gap:7px;margin-bottom:6px;}
 .dest-card{border:2px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:9px;}
 .dest-card:hover,.dest-card.selected{border-color:var(--purple);background:var(--pl);}
 .save-steps{display:flex;align-items:center;gap:6px;margin-bottom:16px;}
 .sdot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
-.sdot.active{background:var(--purple);color:#fff;}
-.sdot.done{background:var(--teal);color:#fff;}
-.sdot.inactive{background:var(--bg3);color:var(--text3);}
-.sline{flex:1;height:2px;background:var(--border);}
-.sline.done{background:var(--teal);}
+.sdot.active{background:var(--purple);color:#fff;}.sdot.done{background:var(--teal);color:#fff;}.sdot.inactive{background:var(--bg3);color:var(--text3);}
+.sline{flex:1;height:2px;background:var(--border);}.sline.done{background:var(--teal);}
 .slabel{font-size:11px;color:var(--text2);}
-.lib-select-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;margin-bottom:8px;}
-.lib-select-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .12s;}
-.lib-select-item:hover{border-color:var(--purple);background:var(--pl);}
-.lib-select-item.selected{border-color:var(--purple);background:var(--pl);}
-.lib-select-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--purple);flex-shrink:0;}
+.lib-select-list{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;margin-bottom:8px;}
+.lib-select-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .12s;}
+.lib-select-item:hover,.lib-select-item.selected{border-color:var(--purple);background:var(--pl);}
+.lib-select-item input[type=checkbox]{width:14px;height:14px;accent-color:var(--purple);flex-shrink:0;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px;}
@@ -158,55 +204,60 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16p
 </header>
 <div class="app">
   <div class="sidebar">
-    <div class="sb-section">
-      <div class="sb-label"><span>新規作成</span></div>
-      <button class="nav-btn" onclick="startNew('doc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>ドキュメント</button>
-      <button class="nav-btn" onclick="startNew('excel')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>表計算・分析</button>
-      <button class="nav-btn" onclick="startNew('slides')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>スライド・資料</button>
+    <div class="sb-tabs">
+      <button class="sb-tab active" onclick="switchSbTab('proj',this)">📁 プロジェクト</button>
+      <button class="sb-tab" onclick="switchSbTab('lib',this)">📚 ライブラリ</button>
+      <button class="sb-tab" onclick="switchSbTab('artifacts',this)">📋 成果物</button>
     </div>
-    <div class="sb-section" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-      <div class="sb-label">
-        <span>📚 資料ライブラリ</span>
-        <button title="資料を追加" onclick="document.getElementById('file-input').click()">＋</button>
+    <div class="sb-pane active" id="sb-proj">
+      <div class="proj-list" id="proj-list"></div>
+      <button class="proj-add-btn" onclick="openNewProjModal()">＋ 新しいプロジェクト</button>
+    </div>
+    <div class="sb-pane" id="sb-lib">
+      <div class="lib-area" id="lib-list"><div class="lib-empty">資料がまだありません。<br>下から追加してください。</div></div>
+      <div class="upload-area">
+        <input type="file" id="file-input" multiple accept=".pdf,.txt,.csv,.xlsx,.xls,.docx,.md,.pptx" onchange="addToLibrary(this.files)">
+        <button class="upload-btn" onclick="document.getElementById('file-input').click()">＋ 資料を追加</button>
       </div>
-      <div class="lib-area" id="lib-list"><div class="lib-empty">資料がまだありません。<br>下の「＋ 資料を追加」から<br>ファイルを登録してください。</div></div>
     </div>
-    <div class="upload-area">
-      <input type="file" id="file-input" multiple accept=".pdf,.txt,.csv,.xlsx,.xls,.docx,.md,.pptx" onchange="addToLibrary(this.files)">
-      <button class="upload-btn" onclick="document.getElementById('file-input').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        ＋ 資料を追加
-      </button>
+    <div class="sb-pane" id="sb-artifacts">
+      <div class="artifact-list" id="artifact-list"><div class="artifact-empty">成果物がまだありません。<br>ドキュメントやExcelを作成すると<br>ここに履歴が残ります。</div></div>
     </div>
   </div>
   <div class="main">
     <div class="home-screen" id="home-screen">
-      <div class="home-title">何を作りますか？</div>
-      <div class="home-sub">左のメニューから作りたいものを選んでください。資料ライブラリにファイルを登録しておくと、作業中にいつでも参照できます。</div>
-      <div class="home-cards">
-        <div class="home-card" onclick="startNew('doc')"><div class="home-card-icon">📄</div><div class="home-card-title">ドキュメントを作る</div><div class="home-card-desc">報告書・議事録・提案書など。AIと会話しながら作成。</div></div>
-        <div class="home-card" onclick="startNew('excel')"><div class="home-card-icon">📊</div><div class="home-card-title">表計算・分析</div><div class="home-card-desc">データ分析・集計表・Excel作成。</div></div>
-        <div class="home-card" onclick="startNew('slides')"><div class="home-card-icon">🖥</div><div class="home-card-title">スライドを作る</div><div class="home-card-desc">プレゼン資料をPowerPoint形式で作成。</div></div>
-        <div class="home-card" onclick="document.getElementById('file-input').click()"><div class="home-card-icon">📚</div><div class="home-card-title">資料を登録する</div><div class="home-card-desc">PDFや資料をライブラリに登録。作業中にいつでも使えます。</div></div>
+      <div id="no-proj-hint" class="no-proj-hint" style="display:none;">📁 まずプロジェクトを作成してください。左の「＋ 新しいプロジェクト」から作れます。</div>
+      <div class="home-proj-header">
+        <div class="home-proj-title">📁 プロジェクト</div>
+        <button class="home-proj-add" onclick="openNewProjModal()">＋ 新規作成</button>
+      </div>
+      <div class="proj-cards" id="home-proj-cards"></div>
+      <div class="home-actions-title">🚀 作成する</div>
+      <div class="home-action-cards">
+        <div class="home-action-card" onclick="startNew('doc')"><div class="home-action-icon">📄</div><div><div class="home-action-title">ドキュメント</div><div class="home-action-desc">報告書・提案書・議事録</div></div></div>
+        <div class="home-action-card" onclick="startNew('excel')"><div class="home-action-icon">📊</div><div><div class="home-action-title">表計算・分析</div><div class="home-action-desc">Excel・集計・グラフ</div></div></div>
+        <div class="home-action-card" onclick="startNew('slides')"><div class="home-action-icon">🖥</div><div><div class="home-action-title">スライド</div><div class="home-action-desc">プレゼン・PowerPoint</div></div></div>
+        <div class="home-action-card" onclick="showAnalysis()"><div class="home-action-icon">🔍</div><div><div class="home-action-title">複数資料を分析</div><div class="home-action-desc">比較・横断検索・要約</div></div></div>
       </div>
     </div>
     <div class="chat-wrap" id="chat-wrap" style="display:none;">
       <div class="chat-topbar">
         <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>ホーム</button>
         <span class="chat-mode-title" id="chat-mode-title"></span>
+        <span class="chat-proj-badge" id="chat-proj-badge"></span>
         <button class="save-btn" onclick="openSaveModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>保存する</button>
       </div>
-      <div class="doc-bar" id="doc-bar">
-        <span class="doc-bar-label">📎 使用中の資料：</span>
+      <div class="doc-bar">
+        <span class="doc-bar-label">📎 参照資料：</span>
         <div class="doc-chips" id="doc-chips"></div>
-        <button class="doc-bar-add" onclick="openLibSelect()">＋ ライブラリから追加</button>
-        <button class="doc-bar-add" onclick="document.getElementById('chat-file-input').click()">＋ ファイルをアップロード</button>
+        <button class="doc-bar-add" onclick="openLibSelect()">＋ ライブラリから</button>
+        <button class="doc-bar-add" onclick="document.getElementById('chat-file-input').click()">＋ アップロード</button>
         <input type="file" id="chat-file-input" multiple accept=".pdf,.txt,.csv,.xlsx,.xls,.docx,.md" onchange="addChatFile(this.files)">
       </div>
       <div class="chat-area" id="chat-area"></div>
       <div class="preview-panel" id="preview-panel">
         <div class="preview-header">
-          <span class="preview-title" id="preview-title">📋 プレビュー — 確認してください</span>
+          <span class="preview-title">📋 プレビュー — 確認してください</span>
           <button onclick="closePreview()" style="font-size:17px;line-height:1;background:none;border:none;cursor:pointer;color:var(--text3);">×</button>
         </div>
         <div class="preview-body" id="preview-body"></div>
@@ -223,13 +274,34 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16p
           <button class="send-btn" onclick="sendChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
         </div>
         <div class="input-tools">
-          <button class="input-tool-btn" onclick="document.getElementById('chat-file-input').click()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            ファイルをアップロード
-          </button>
+          <button class="input-tool-btn" onclick="document.getElementById('chat-file-input').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>ファイルをアップロード</button>
           <button class="input-tool-btn" onclick="openLibSelect()">📚 ライブラリから追加</button>
-          <span class="input-hint" id="input-hint"></span>
         </div>
+      </div>
+    </div>
+    <div class="analysis-wrap" id="analysis-wrap" style="display:none;">
+      <div class="analysis-topbar">
+        <button class="back-btn" onclick="goHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>ホーム</button>
+        <span style="font-size:13px;font-weight:500;">🔍 複数資料の横断分析</span>
+        <span class="chat-proj-badge" id="analysis-proj-badge" style="margin-left:4px;"></span>
+      </div>
+      <div class="analysis-body">
+        <div class="analysis-title">分析する資料を選んでください</div>
+        <div class="analysis-sub">ライブラリから複数の資料を選んで、まとめて分析・比較・要約できます。</div>
+        <div class="analysis-doc-grid" id="analysis-doc-grid"></div>
+        <div class="analysis-actions">
+          <button class="analysis-action-btn primary" onclick="runAnalysis('summary')">📝 まとめて要約する</button>
+          <button class="analysis-action-btn" onclick="runAnalysis('compare')">⚖ 内容を比較する</button>
+          <button class="analysis-action-btn" onclick="runAnalysis('keywords')">🔑 キーワードを抽出する</button>
+          <button class="analysis-action-btn" onclick="runAnalysis('qa')">💬 質問して横断検索</button>
+        </div>
+        <div id="analysis-qa-area" style="display:none;margin-bottom:12px;">
+          <div style="display:flex;gap:8px;">
+            <input id="analysis-qa-input" type="text" placeholder="全資料に対して質問を入力..." style="flex:1;padding:8px 12px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit;outline:none;">
+            <button onclick="runAnalysis('qa-send')" style="padding:8px 16px;border-radius:8px;background:var(--purple);color:#fff;border:none;cursor:pointer;font-size:12px;">検索</button>
+          </div>
+        </div>
+        <div id="analysis-result" class="analysis-result" style="display:none;"></div>
       </div>
     </div>
   </div>
@@ -240,6 +312,14 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16p
     <p><code>sk-ant-</code> で始まるAnthropicのAPIキーを入力してください。このブラウザにのみ保存されます。</p>
     <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
     <div class="modal-btns"><button class="modal-cancel" onclick="closeApiModal()">キャンセル</button><button class="modal-save" onclick="saveApiKey()">保存する</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="proj-modal">
+  <div class="modal">
+    <h2>📁 新しいプロジェクトを作成</h2>
+    <p>プロジェクト名を入力してください。関連する作業・資料・成果物をまとめて管理できます。</p>
+    <input type="text" id="proj-name-input" placeholder="例：2024年度営業報告、新製品提案など">
+    <div class="modal-btns"><button class="modal-cancel" onclick="closeProjModal()">キャンセル</button><button class="modal-save" onclick="createProject()">作成する</button></div>
   </div>
 </div>
 <div class="modal-overlay" id="lib-modal">
@@ -271,36 +351,59 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16p
 <script>
 let apiKey=localStorage.getItem('claude_api_key')||'';
 let library=JSON.parse(localStorage.getItem('bfs_library')||'[]');
+let projects=JSON.parse(localStorage.getItem('bfs_projects')||'[]');
+let artifacts=JSON.parse(localStorage.getItem('bfs_artifacts')||'[]');
+let currentProjectId=localStorage.getItem('bfs_current_proj')||'';
 let chatDocs=[];
 let currentMode='';
 let conversationHistory=[];
 let latestContent='';
 let selectedFormat='';
 let selectedDest='';
-const modeInfo={doc:{label:'📄 ドキュメント作成',hint:'AIと会話しながら作成します。どんな文書を作るか教えてください。'},excel:{label:'📊 表計算・データ分析',hint:'どんなデータや表が必要か教えてください。'},slides:{label:'🖥 スライド・プレゼン資料',hint:'テーマと目的を教えてください。'}};
+let selectedAnalysisDocs=[];
 const formats={doc:[{id:'gdoc',icon:'📄',name:'Google ドキュメント',desc:'Googleで編集・共有'},{id:'word',icon:'📝',name:'Word (.doc)',desc:'Microsoft Wordで編集'},{id:'pdf',icon:'📕',name:'PDF',desc:'印刷・配布に最適'},{id:'txt',icon:'📃',name:'テキスト (.txt)',desc:'シンプルなテキスト'}],excel:[{id:'gsheet',icon:'📊',name:'Google スプレッドシート',desc:'Googleで編集・共有'},{id:'xlsx',icon:'📗',name:'Excel (.xlsx)',desc:'Microsoft Excelで編集'},{id:'csv',icon:'📋',name:'CSV (.csv)',desc:'汎用テキスト形式'},{id:'pdf',icon:'📕',name:'PDF',desc:'印刷・配布に最適'}],slides:[{id:'gslide',icon:'🖥',name:'Google スライド',desc:'Googleで編集・共有'},{id:'pptx',icon:'📙',name:'PowerPoint (.pptx)',desc:'PowerPointで編集'},{id:'pdf',icon:'📕',name:'PDF',desc:'印刷・配布に最適'}]};
-const systemPrompts={doc:`あなたはプロのドキュメント作成アシスタントです。日本語で回答してください。ユーザーと会話しながら、報告書・提案書・議事録などを作成します。資料が提供されている場合はその内容を参照してください。まず目的・内容を確認し、情報を集めてからドキュメントを生成してください。コンテンツが完成したら必ず以下の形式で出力してください：\n---PREVIEW_START---\n<h1>タイトル</h1><h2>セクション</h2><p>内容</p>\n---PREVIEW_END---`,excel:`あなたはプロのデータ分析・表計算アシスタントです。日本語で回答してください。ユーザーと会話しながら、データ分析・集計表・レポートを作成します。資料が提供されている場合はその内容からデータを抽出・分析してください。コンテンツが完成したら必ず以下の形式で出力してください：\n---PREVIEW_START---\n<h2>タイトル</h2><table><thead><tr><th>列1</th><th>列2</th></tr></thead><tbody><tr><td>値</td><td>値</td></tr></tbody></table>\n---PREVIEW_END---`,slides:`あなたはプロのプレゼン資料作成アシスタントです。日本語で回答してください。ユーザーと会話しながら、スライド・プレゼン資料を作成します。資料が提供されている場合はその内容を構造化してスライドに反映してください。コンテンツが完成したら必ず以下の形式で出力してください：\n---PREVIEW_START---\n<h2>スライド1：タイトル</h2><p>内容</p>\n<h2>スライド2：タイトル</h2><p>内容</p>\n---PREVIEW_END---`};
-window.onload=()=>{updateApiStatus();renderLibrary();if(!apiKey)setTimeout(openApiModal,800);};
+const systemPrompts={doc:`あなたはプロのドキュメント作成アシスタントです。日本語で回答してください。ユーザーと会話しながら報告書・提案書・議事録などを作成します。資料が提供されている場合はその内容を参照してください。まず目的・内容を確認し、コンテンツが完成したら必ず以下の形式で出力してください：\n---PREVIEW_START---\n<h1>タイトル</h1><h2>セクション</h2><p>内容</p>\n---PREVIEW_END---`,excel:`あなたはプロのデータ分析・表計算アシスタントです。日本語で回答してください。ユーザーと会話しながらデータ分析・集計表・レポートを作成します。資料が提供されている場合はその内容からデータを抽出・分析してください。コンテンツが完成したら必ず以下の形式で出力してください：\n---PREVIEW_START---\n<h2>タイトル</h2><table><thead><tr><th>列1</th><th>列2</th></tr></thead><tbody><tr><td>値</td><td>値</td></tr></tbody></table>\n---PREVIEW_END---`,slides:`あなたはプロのプレゼン資料作成アシスタントです。日本語で回答してください。ユーザーと会話しながらスライド・プレゼン資料を作成します。資料が提供されている場合はその内容を構造化してスライドに反映してください。コンテンツが完成したら必ず以下の形式で出力してください：\n---PREVIEW_START---\n<h2>スライド1：タイトル</h2><p>内容</p>\n<h2>スライド2：タイトル</h2><p>内容</p>\n---PREVIEW_END---`};
+window.onload=()=>{updateApiStatus();renderSidebar();renderHomeProjects();renderArtifacts();if(!apiKey)setTimeout(openApiModal,800);};
 function openApiModal(){document.getElementById('api-key-input').value=apiKey;document.getElementById('api-modal').classList.add('show');}
 function closeApiModal(){document.getElementById('api-modal').classList.remove('show');}
 function saveApiKey(){const k=document.getElementById('api-key-input').value.trim();if(!k){alert('APIキーを入力してください');return;}apiKey=k;localStorage.setItem('claude_api_key',k);updateApiStatus();closeApiModal();}
 function updateApiStatus(){const e=document.getElementById('api-status');if(apiKey){e.textContent='✓ API接続済み';e.classList.add('ok');}else{e.textContent='APIキー未設定';e.classList.remove('ok');}}
-function addToLibrary(files){Array.from(files).forEach(f=>{const r=new FileReader();r.onload=e=>{if(library.find(l=>l.name===f.name)){if(!confirm(`「${f.name}」は既に登録されています。上書きしますか？`))return;library=library.filter(l=>l.name!==f.name);}const kb=Math.round(f.size/1024);library.push({name:f.name,content:e.target.result,size:kb,type:f.type,addedAt:Date.now()});saveLibrary();renderLibrary();};r.readAsText(f);});document.getElementById('file-input').value='';}
-function saveLibrary(){try{localStorage.setItem('bfs_library',JSON.stringify(library));}catch(e){console.warn('ライブラリ保存エラー');}}
-function renderLibrary(){const el=document.getElementById('lib-list');if(library.length===0){el.innerHTML='<div class="lib-empty">資料がまだありません。<br>下の「＋ 資料を追加」から<br>ファイルを登録してください。</div>';return;}el.innerHTML=library.map((f,i)=>`<div class="lib-item ${chatDocs.find(d=>d.name===f.name&&d.fromLib)?'selected':''}" onclick="toggleLibDoc(${i})"><span class="lib-item-icon">${fileIcon(f.name)}</span><div class="lib-item-info"><div class="lib-item-name">${f.name}</div><div class="lib-item-size">${f.size}KB</div></div><span class="lib-item-del" onclick="event.stopPropagation();removeFromLibrary(${i})">×</span></div>`).join('');}
-function removeFromLibrary(i){if(!confirm(`「${library[i].name}」をライブラリから削除しますか？`))return;library.splice(i,1);saveLibrary();renderLibrary();}
-function fileIcon(name){const ext=name.split('.').pop().toLowerCase();if(['pdf'].includes(ext))return'📕';if(['xlsx','xls','csv'].includes(ext))return'📗';if(['docx','doc'].includes(ext))return'📘';if(['pptx','ppt'].includes(ext))return'📙';return'📄';}
-function goHome(){document.getElementById('home-screen').style.display='flex';document.getElementById('chat-wrap').style.display='none';currentMode='';conversationHistory=[];latestContent='';chatDocs=[];renderLibrary();}
-function showChat(mode){currentMode=mode;conversationHistory=[];latestContent='';document.getElementById('home-screen').style.display='none';document.getElementById('chat-wrap').style.display='flex';document.getElementById('chat-area').innerHTML='';closePreview();document.getElementById('chat-mode-title').textContent=modeInfo[mode].label;document.getElementById('input-hint').textContent=modeInfo[mode].hint;renderDocBar();}
-function startNew(mode){if(!apiKey){openApiModal();return;}chatDocs=[];showChat(mode);const g={doc:'どんなドキュメントを作りますか？\n\n例えば「営業報告書」「会議の議事録」「提案書」など、目的と内容を教えてください。\n\n関連する資料があれば、下の「ファイルをアップロード」またはライブラリから追加すると、その内容を参考にして作成します。',excel:'どんな表やデータ分析を作りますか？\n\n例えば「月別売上集計」「在庫管理表」など教えてください。\n\n既存のデータファイルがあれば下からアップロードしてください。',slides:'どんなプレゼン資料を作りますか？\n\nテーマ・目的・枚数・対象者を教えてください。\n\n参考資料があればアップロードすると内容を反映できます。'};addAiMessage(g[mode]);}
-function addChatFile(files){Array.from(files).forEach(f=>{const r=new FileReader();r.onload=e=>{if(chatDocs.find(d=>d.name===f.name))return;const kb=Math.round(f.size/1024);chatDocs.push({name:f.name,content:e.target.result,size:kb,fromLib:false});renderDocBar();addAiMessage(`「${f.name}」を読み込みました。この資料の内容を参考にして作業を進めます。`);};r.readAsText(f);});document.getElementById('chat-file-input').value='';}
-function toggleLibDoc(i){if(document.getElementById('chat-wrap').style.display==='none')return;const f=library[i];const idx=chatDocs.findIndex(d=>d.name===f.name&&d.fromLib);if(idx>=0){chatDocs.splice(idx,1);addAiMessage(`「${f.name}」を資料から外しました。`);}else{chatDocs.push({name:f.name,content:f.content,size:f.size,fromLib:true});addAiMessage(`「${f.name}」をライブラリから追加しました。この資料を参考にして作業を進めます。`);}renderDocBar();renderLibrary();}
+function switchSbTab(tab,btn){document.querySelectorAll('.sb-tab').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.sb-pane').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('sb-'+tab).classList.add('active');}
+function currentProject(){return projects.find(p=>p.id===currentProjectId)||null;}
+function openNewProjModal(){document.getElementById('proj-name-input').value='';document.getElementById('proj-modal').classList.add('show');setTimeout(()=>document.getElementById('proj-name-input').focus(),100);}
+function closeProjModal(){document.getElementById('proj-modal').classList.remove('show');}
+function createProject(){const name=document.getElementById('proj-name-input').value.trim();if(!name){alert('プロジェクト名を入力してください');return;}const proj={id:'p'+Date.now(),name,createdAt:Date.now(),docCount:0};projects.unshift(proj);saveProjects();currentProjectId=proj.id;localStorage.setItem('bfs_current_proj',currentProjectId);renderSidebar();renderHomeProjects();closeProjModal();}
+function selectProject(id){currentProjectId=id;localStorage.setItem('bfs_current_proj',id);renderSidebar();renderHomeProjects();renderArtifacts();}
+function deleteProject(id){const p=projects.find(q=>q.id===id);if(!p)return;if(!confirm(`「${p.name}」を削除しますか？\n※このプロジェクトの成果物も削除されます。`))return;projects=projects.filter(q=>q.id!==id);artifacts=artifacts.filter(a=>a.projectId!==id);if(currentProjectId===id)currentProjectId=projects.length?projects[0].id:'';localStorage.setItem('bfs_current_proj',currentProjectId);saveProjects();saveArtifacts();renderSidebar();renderHomeProjects();renderArtifacts();}
+function saveProjects(){localStorage.setItem('bfs_projects',JSON.stringify(projects));}
+function renderSidebar(){const el=document.getElementById('proj-list');if(projects.length===0){el.innerHTML='<div class="lib-empty">プロジェクトがありません。<br>下から作成してください。</div>';document.getElementById('no-proj-hint').style.display='block';return;}document.getElementById('no-proj-hint').style.display='none';el.innerHTML=projects.map(p=>`<div class="proj-item ${p.id===currentProjectId?'active':''}" onclick="selectProject('${p.id}')"><span class="proj-item-icon">📁</span><div class="proj-item-info"><div class="proj-item-name">${p.name}</div><div class="proj-item-meta">${artifacts.filter(a=>a.projectId===p.id).length}件の成果物</div></div><span class="proj-item-del" onclick="event.stopPropagation();deleteProject('${p.id}')">×</span></div>`).join('');}
+function renderHomeProjects(){const el=document.getElementById('home-proj-cards');if(projects.length===0){el.innerHTML='<div style="grid-column:1/-1;font-size:13px;color:var(--text2);padding:8px 0;">プロジェクトがまだありません。「＋ 新規作成」から作ってください。</div>';return;}el.innerHTML=projects.map(p=>`<div class="proj-card ${p.id===currentProjectId?'active-proj':''}" onclick="selectProject('${p.id}')"><div class="proj-card-icon">📁</div><div class="proj-card-name">${p.name}</div><div class="proj-card-meta">${artifacts.filter(a=>a.projectId===p.id).length}件の成果物 · ${new Date(p.createdAt).toLocaleDateString('ja-JP')}</div></div>`).join('');}
+function addToLibrary(files){Array.from(files).forEach(f=>{const r=new FileReader();r.onload=e=>{if(library.find(l=>l.name===f.name)){if(!confirm(`「${f.name}」は既に登録されています。上書きしますか？`))return;library=library.filter(l=>l.name!==f.name);}library.push({name:f.name,content:e.target.result,size:Math.round(f.size/1024),type:f.type,addedAt:Date.now()});saveLibrary();renderLibrary();};r.readAsText(f);});document.getElementById('file-input').value='';}
+function saveLibrary(){try{localStorage.setItem('bfs_library',JSON.stringify(library));}catch(e){}}
+function renderLibrary(){const el=document.getElementById('lib-list');if(library.length===0){el.innerHTML='<div class="lib-empty">資料がまだありません。<br>下から追加してください。</div>';return;}el.innerHTML=library.map((f,i)=>`<div class="lib-item ${chatDocs.find(d=>d.name===f.name&&d.fromLib)?'inuse':''}" onclick="toggleLibDoc(${i})"><span class="lib-item-icon">${fileIcon(f.name)}</span><div class="lib-item-info"><div class="lib-item-name">${f.name}</div><div class="lib-item-size">${f.size}KB</div></div><span class="lib-item-del" onclick="event.stopPropagation();removeFromLibrary(${i})">×</span></div>`).join('');}
+function removeFromLibrary(i){if(!confirm(`「${library[i].name}」を削除しますか？`))return;library.splice(i,1);saveLibrary();renderLibrary();}
+function saveArtifact(name,type,content){const proj=currentProject();const item={id:'a'+Date.now(),name,type,content,projectId:currentProjectId,projectName:proj?proj.name:'未分類',createdAt:Date.now()};artifacts.unshift(item);if(artifacts.length>50)artifacts=artifacts.slice(0,50);saveArtifacts();if(proj){proj.docCount=(proj.docCount||0)+1;saveProjects();}renderArtifacts();renderSidebar();renderHomeProjects();}
+function saveArtifacts(){localStorage.setItem('bfs_artifacts',JSON.stringify(artifacts));}
+function renderArtifacts(){const el=document.getElementById('artifact-list');const list=currentProjectId?artifacts.filter(a=>a.projectId===currentProjectId):artifacts;if(list.length===0){el.innerHTML='<div class="artifact-empty">成果物がまだありません。<br>ドキュメントやExcelを作成すると<br>ここに履歴が残ります。</div>';return;}el.innerHTML=list.map(a=>`<div class="artifact-item" onclick="restoreArtifact('${a.id}')"><div class="artifact-item-header"><span class="artifact-icon">${artifactIcon(a.type)}</span><span class="artifact-name">${a.name}</span><span class="artifact-del" onclick="event.stopPropagation();deleteArtifact('${a.id}')">×</span></div><div class="artifact-meta">${new Date(a.createdAt).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div>${a.projectName?`<span class="artifact-proj">📁 ${a.projectName}</span>`:''}</div>`).join('');}
+function deleteArtifact(id){if(!confirm('この成果物を削除しますか？'))return;artifacts=artifacts.filter(a=>a.id!==id);saveArtifacts();renderArtifacts();}
+function restoreArtifact(id){const a=artifacts.find(x=>x.id===id);if(!a)return;latestContent=a.content;currentMode=a.type;showChat(a.type);addAiMessage(`「${a.name}」を復元しました。内容を確認するか、修正を加えてください。`,[{l:'📋 プレビュー表示',a:'showPreview(latestContent)'},{l:'💾 再保存',a:'openSaveModal()'}]);}
+function artifactIcon(type){return type==='excel'?'📗':type==='slides'?'📙':'📄';}
+function goHome(){document.getElementById('home-screen').style.display='block';document.getElementById('chat-wrap').style.display='none';document.getElementById('analysis-wrap').style.display='none';currentMode='';conversationHistory=[];latestContent='';chatDocs=[];renderLibrary();}
+function modeInfoLabel(mode){return mode==='excel'?'📊 表計算・データ分析':mode==='slides'?'🖥 スライド・プレゼン資料':'📄 ドキュメント作成';}
+function showChat(mode){currentMode=mode;document.getElementById('home-screen').style.display='none';document.getElementById('chat-wrap').style.display='flex';document.getElementById('analysis-wrap').style.display='none';document.getElementById('chat-area').innerHTML='';closePreview();document.getElementById('chat-mode-title').textContent=modeInfoLabel(mode);const proj=currentProject();document.getElementById('chat-proj-badge').textContent=proj?'📁 '+proj.name:'';renderDocBar();}
+function startNew(mode){if(!apiKey){openApiModal();return;}conversationHistory=[];latestContent='';chatDocs=[];showChat(mode);const g={doc:'どんなドキュメントを作りますか？\n\n例えば「営業報告書」「会議の議事録」「提案書」など、目的と内容を教えてください。\n\n関連する資料があれば下から追加すると内容を参考にして作成します。',excel:'どんな表やデータ分析を作りますか？\n\n例えば「月別売上集計」「在庫管理表」などを教えてください。\n\n既存のデータファイルがあればアップロードしてください。',slides:'どんなプレゼン資料を作りますか？\n\nテーマ・目的・枚数・対象者を教えてください。\n\n参考資料があればアップロードすると内容を反映できます。'};addAiMessage(g[mode]);}
+function showAnalysis(){if(!apiKey){openApiModal();return;}document.getElementById('home-screen').style.display='none';document.getElementById('chat-wrap').style.display='none';document.getElementById('analysis-wrap').style.display='flex';selectedAnalysisDocs=[];document.getElementById('analysis-result').style.display='none';document.getElementById('analysis-qa-area').style.display='none';const proj=currentProject();document.getElementById('analysis-proj-badge').textContent=proj?'📁 '+proj.name:'';renderAnalysisDocs();}
+function renderAnalysisDocs(){const el=document.getElementById('analysis-doc-grid');if(library.length===0){el.innerHTML='<div style="grid-column:1/-1;font-size:13px;color:var(--text2);">ライブラリに資料がありません。サイドバーの「📚 ライブラリ」タブから追加してください。</div>';return;}el.innerHTML=library.map((f,i)=>`<div class="analysis-doc-card ${selectedAnalysisDocs.includes(i)?'selected':''}" onclick="toggleAnalysisDoc(${i})"><div class="analysis-doc-card-icon">${fileIcon(f.name)}</div><div class="analysis-doc-card-name">${f.name}</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">${f.size}KB</div></div>`).join('');}
+function toggleAnalysisDoc(i){const idx=selectedAnalysisDocs.indexOf(i);if(idx>=0)selectedAnalysisDocs.splice(idx,1);else selectedAnalysisDocs.push(i);renderAnalysisDocs();}
+async function runAnalysis(type){if(type==='qa'){document.getElementById('analysis-qa-area').style.display='block';return;}if(selectedAnalysisDocs.length===0){alert('分析する資料を1つ以上選んでください');return;}if(!apiKey){openApiModal();return;}const docs=selectedAnalysisDocs.map(i=>library[i]);const docsCtx=docs.map(d=>`--- ${d.name} ---\n${d.content.slice(0,3000)}`).join('\n\n');const prompts={summary:`以下の資料をまとめて要約してください。各資料の主要なポイントを箇条書きで整理し、最後に全体のまとめを書いてください。\n\n${docsCtx}`,compare:`以下の資料の内容を比較分析してください。共通点・相違点・特徴を整理した比較表や分析を提供してください。\n\n${docsCtx}`,keywords:`以下の資料から重要なキーワード・トピック・数値データを抽出してください。資料ごとに整理してください。\n\n${docsCtx}`,'qa-send':`以下の資料に基づいて質問に答えてください。どの資料のどの部分を参照したか示してください。\n\n質問：${document.getElementById('analysis-qa-input').value}\n\n${docsCtx}`};const resultEl=document.getElementById('analysis-result');resultEl.textContent='分析中...';resultEl.style.display='block';try{const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:prompts[type]}]})});const data=await res.json();if(data.error){resultEl.textContent='エラー: '+data.error.message;return;}resultEl.textContent=data.content[0].text;}catch(e){resultEl.textContent='通信エラーが発生しました。';}}
+function addChatFile(files){Array.from(files).forEach(f=>{const r=new FileReader();r.onload=e=>{if(chatDocs.find(d=>d.name===f.name))return;chatDocs.push({name:f.name,content:e.target.result,size:Math.round(f.size/1024),fromLib:false});renderDocBar();addAiMessage(`「${f.name}」を読み込みました。この資料を参考にして作業を進めます。`);};r.readAsText(f);});document.getElementById('chat-file-input').value='';}
+function toggleLibDoc(i){if(document.getElementById('chat-wrap').style.display==='none')return;const f=library[i];const idx=chatDocs.findIndex(d=>d.name===f.name&&d.fromLib);if(idx>=0){chatDocs.splice(idx,1);addAiMessage(`「${f.name}」を資料から外しました。`);}else{chatDocs.push({name:f.name,content:f.content,size:f.size,fromLib:true});addAiMessage(`「${f.name}」をライブラリから追加しました。`);}renderDocBar();renderLibrary();}
 function removeChatDoc(i){chatDocs.splice(i,1);renderDocBar();renderLibrary();}
-function renderDocBar(){const chips=document.getElementById('doc-chips');if(chatDocs.length===0){chips.innerHTML='<span style="font-size:11px;color:var(--text3);">なし</span>';}else{chips.innerHTML=chatDocs.map((d,i)=>`<span class="doc-chip ${d.fromLib?'lib':''}">${fileIcon(d.name)} ${d.name}<span class="doc-chip-del" onclick="removeChatDoc(${i})">×</span></span>`).join('');}}
-function openLibSelect(){if(library.length===0){alert('ライブラリに資料がありません。\nサイドバー下部からファイルを追加してください。');return;}const el=document.getElementById('lib-select-list');el.innerHTML=library.map((f,i)=>{const checked=chatDocs.find(d=>d.name===f.name&&d.fromLib)?'checked':'';return`<label class="lib-select-item ${checked?'selected':''}"><input type="checkbox" ${checked} onchange="this.closest('.lib-select-item').classList.toggle('selected',this.checked)" data-idx="${i}"><span style="font-size:18px;">${fileIcon(f.name)}</span><div><div style="font-size:13px;font-weight:500;">${f.name}</div><div style="font-size:11px;color:var(--text2);">${f.size}KB</div></div></label>`;}).join('');document.getElementById('lib-modal').classList.add('show');}
+function renderDocBar(){const chips=document.getElementById('doc-chips');if(chatDocs.length===0){chips.innerHTML='<span style="font-size:11px;color:var(--text3);">なし</span>';return;}chips.innerHTML=chatDocs.map((d,i)=>`<span class="doc-chip ${d.fromLib?'lib':''}">${fileIcon(d.name)} ${d.name}<span class="doc-chip-del" onclick="removeChatDoc(${i})">×</span></span>`).join('');}
+function openLibSelect(){if(library.length===0){alert('ライブラリに資料がありません。サイドバーの「📚 ライブラリ」から追加してください。');return;}const el=document.getElementById('lib-select-list');el.innerHTML=library.map((f,i)=>{const checked=chatDocs.find(d=>d.name===f.name&&d.fromLib)?'checked':'';return`<label class="lib-select-item ${checked?'selected':''}"><input type="checkbox" ${checked} onchange="this.closest('.lib-select-item').classList.toggle('selected',this.checked)" data-idx="${i}"><span style="font-size:18px;">${fileIcon(f.name)}</span><div><div style="font-size:13px;font-weight:500;">${f.name}</div><div style="font-size:11px;color:var(--text2);">${f.size}KB</div></div></label>`;}).join('');document.getElementById('lib-modal').classList.add('show');}
 function closeLibSelect(){document.getElementById('lib-modal').classList.remove('show');}
-function applyLibSelect(){const checks=document.querySelectorAll('#lib-select-list input[type=checkbox]');checks.forEach(cb=>{const f=library[cb.dataset.idx];const exists=chatDocs.find(d=>d.name===f.name&&d.fromLib);if(cb.checked&&!exists){chatDocs.push({name:f.name,content:f.content,size:f.size,fromLib:true});}else if(!cb.checked&&exists){chatDocs=chatDocs.filter(d=>!(d.name===f.name&&d.fromLib));}});renderDocBar();renderLibrary();closeLibSelect();if(chatDocs.length>0)addAiMessage(`資料を更新しました。現在 ${chatDocs.length} 件の資料を参照しています。`);}
-async function sendChat(){if(!apiKey){openApiModal();return;}const input=document.getElementById('chat-input');const text=input.value.trim();if(!text)return;input.value='';input.style.height='38px';addUserMessage(text);let docsCtx='';if(chatDocs.length>0){docsCtx='\n\n【参照資料】\n'+chatDocs.map(d=>`--- 資料名：${d.name} ---\n${d.content.slice(0,3000)}`).join('\n\n');}conversationHistory.push({role:'user',content:text+docsCtx});const loadId=addLoading();try{const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,system:systemPrompts[currentMode],messages:conversationHistory})});const data=await res.json();removeLoading(loadId);if(data.error){addAiMessage('エラー: '+data.error.message);return;}const reply=data.content[0].text;conversationHistory.push({role:'assistant',content:reply});if(reply.includes('---PREVIEW_START---')){const match=reply.match(/---PREVIEW_START---([\s\S]*?)---PREVIEW_END---/);if(match){latestContent=match[1].trim();const before=reply.split('---PREVIEW_START---')[0].trim();if(before)addAiMessage(before);showPreview(latestContent);return;}}addAiMessage(reply);}catch(e){removeLoading(loadId);addAiMessage('通信エラーが発生しました。APIキーとネットワーク接続を確認してください。');}}
+function applyLibSelect(){document.querySelectorAll('#lib-select-list input[type=checkbox]').forEach(cb=>{const f=library[cb.dataset.idx];const exists=chatDocs.find(d=>d.name===f.name&&d.fromLib);if(cb.checked&&!exists)chatDocs.push({name:f.name,content:f.content,size:f.size,fromLib:true});else if(!cb.checked&&exists)chatDocs=chatDocs.filter(d=>!(d.name===f.name&&d.fromLib));});renderDocBar();renderLibrary();closeLibSelect();if(chatDocs.length>0)addAiMessage(`資料を更新しました。現在 ${chatDocs.length} 件を参照しています。`);}
+async function sendChat(){if(!apiKey){openApiModal();return;}const input=document.getElementById('chat-input');const text=input.value.trim();if(!text)return;input.value='';input.style.height='38px';addUserMessage(text);let docsCtx='';if(chatDocs.length>0)docsCtx='\n\n【参照資料】\n'+chatDocs.map(d=>`--- ${d.name} ---\n${d.content.slice(0,3000)}`).join('\n\n');conversationHistory.push({role:'user',content:text+docsCtx});const loadId=addLoading();try{const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,system:systemPrompts[currentMode],messages:conversationHistory})});const data=await res.json();removeLoading(loadId);if(data.error){addAiMessage('エラー: '+data.error.message);return;}const reply=data.content[0].text;conversationHistory.push({role:'assistant',content:reply});if(reply.includes('---PREVIEW_START---')){const match=reply.match(/---PREVIEW_START---([\s\S]*?)---PREVIEW_END---/);if(match){latestContent=match[1].trim();const before=reply.split('---PREVIEW_START---')[0].trim();if(before)addAiMessage(before);showPreview(latestContent);return;}}addAiMessage(reply);}catch(e){removeLoading(loadId);addAiMessage('通信エラーが発生しました。');}}
 function addAiMessage(text,chips){const area=document.getElementById('chat-area');const div=document.createElement('div');div.className='msg ai';const ch=chips?`<div class="bubble-chips">${chips.map(c=>`<span class="chip" onclick="${c.a}">${c.l}</span>`).join('')}</div>`:'';div.innerHTML=`<div class="avatar ai">AI</div><div><div class="bubble">${text.replace(/\n/g,'<br>')}</div>${ch}</div>`;area.appendChild(div);area.scrollTop=area.scrollHeight;}
 function addUserMessage(text){const area=document.getElementById('chat-area');const div=document.createElement('div');div.className='msg user';div.innerHTML=`<div class="avatar user">私</div><div class="bubble">${text.replace(/\n/g,'<br>')}</div>`;area.appendChild(div);area.scrollTop=area.scrollHeight;}
 function addLoading(){const id='l'+Date.now();const area=document.getElementById('chat-area');const div=document.createElement('div');div.className='msg ai';div.id=id;div.innerHTML=`<div class="avatar ai">AI</div><div class="bubble"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;area.appendChild(div);area.scrollTop=area.scrollHeight;return id;}
@@ -315,12 +418,14 @@ function selFmt(id){selectedFormat=id;document.querySelectorAll('.format-card').
 function goStep2(){if(!selectedFormat){alert('保存形式を選んでください');return;}const isG=['gdoc','gsheet','gslide'].includes(selectedFormat);const dests=isG?[{id:'google',icon:'☁️',name:'Googleドライブに保存',desc:'Googleアカウントに自動保存'}]:[{id:'download',icon:'💾',name:'このPCにダウンロード',desc:'ダウンロードフォルダに保存'},{id:'google',icon:'☁️',name:'Googleドライブに保存',desc:'Googleアカウントに保存'}];document.getElementById('dest-list').innerHTML=dests.map(d=>`<div class="dest-card" id="dst-${d.id}" onclick="selDst('${d.id}')"><div class="fi">${d.icon}</div><div><div class="fn">${d.name}</div><div class="fd">${d.desc}</div></div></div>`).join('');if(isG)selDst('google');document.getElementById('save-s1').style.display='none';document.getElementById('save-s2').style.display='block';document.getElementById('s1dot').className='sdot done';document.getElementById('s2dot').className='sdot active';document.getElementById('s1line').className='sline done';document.getElementById('slabel').textContent='保存先を選ぶ';}
 function selDst(id){selectedDest=id;document.querySelectorAll('.dest-card').forEach(c=>c.classList.remove('selected'));document.getElementById('dst-'+id).classList.add('selected');}
 function backStep1(){document.getElementById('save-s1').style.display='block';document.getElementById('save-s2').style.display='none';document.getElementById('s1dot').className='sdot active';document.getElementById('s2dot').className='sdot inactive';document.getElementById('s1line').className='sline';document.getElementById('slabel').textContent='形式を選ぶ';}
-function executeSave(){if(!selectedDest){alert('保存先を選んでください');return;}const isG=['gdoc','gsheet','gslide'].includes(selectedFormat);if(isG||selectedDest==='google'){const urls={gdoc:'https://docs.google.com/document/create',gsheet:'https://sheets.google.com/create',gslide:'https://slides.google.com/create'};closeSaveModal();if(confirm('Googleのページが開きます。内容をコピーして貼り付けてください。\nOKをクリックすると開きます。'))window.open(urls[selectedFormat]||'https://drive.google.com','_blank');return;}closeSaveModal();if(currentMode==='excel')doSaveExcel();else if(currentMode==='slides')doSaveSlides();else doSaveDoc();}
+function executeSave(){if(!selectedDest){alert('保存先を選んでください');return;}const isG=['gdoc','gsheet','gslide'].includes(selectedFormat);if(isG||selectedDest==='google'){const urls={gdoc:'https://docs.google.com/document/create',gsheet:'https://sheets.google.com/create',gslide:'https://slides.google.com/create'};closeSaveModal();if(confirm('Googleのページが開きます。内容をコピーして貼り付けてください。\nOKをクリックすると開きます。'))window.open(urls[selectedFormat]||'https://drive.google.com','_blank');return;}closeSaveModal();const typeName={doc:'ドキュメント',excel:'表計算',slides:'スライド'};const fileName=`${typeName[currentMode]||'ファイル'}_${new Date().toLocaleDateString('ja-JP').replace(/\//g,'')}`;saveArtifact(fileName,currentMode,latestContent);if(currentMode==='excel')doSaveExcel();else if(currentMode==='slides')doSaveSlides();else doSaveDoc();addAiMessage('✅ 成果物を保存しました！サイドバーの「📋 成果物」から後で見返せます。');}
 function doSaveDoc(){if(selectedFormat==='pdf'){window.print();return;}if(selectedFormat==='word'){dlFile(new Blob([`<html><head><meta charset="utf-8"><style>body{font-family:Arial;margin:40px;}</style></head><body>${latestContent}</body></html>`],{type:'application/msword'}),'document.doc');return;}const t=document.createElement('div');t.innerHTML=latestContent;dlFile(new Blob([t.innerText],{type:'text/plain;charset=utf-8'}),'document.txt');}
 function doSaveExcel(){if(selectedFormat==='pdf'){window.print();return;}const t=document.createElement('div');t.innerHTML=latestContent;const tables=t.querySelectorAll('table');if(!tables.length){dlFile(new Blob(['\uFEFF'+t.innerText],{type:'text/csv;charset=utf-8'}),'data.csv');return;}if(selectedFormat==='csv'){let csv='';tables[0].querySelectorAll('tr').forEach(tr=>{csv+=Array.from(tr.cells).map(td=>'"'+td.textContent.trim()+'"').join(',')+'\n';});dlFile(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),'data.csv');return;}const wb=XLSX.utils.book_new();tables.forEach((table,idx)=>{const rows=[];table.querySelectorAll('tr').forEach(tr=>{rows.push(Array.from(tr.cells).map(td=>td.textContent.trim()));});XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'シート'+(idx+1));});XLSX.writeFile(wb,'report.xlsx');}
 function doSaveSlides(){if(selectedFormat==='pdf'){window.print();return;}const t=document.createElement('div');t.innerHTML=latestContent;const pptx=new PptxGenJS();pptx.layout='LAYOUT_16x9';const h2s=t.querySelectorAll('h2');if(!h2s.length){const s=pptx.addSlide();s.background={color:'534AB7'};s.addText(t.innerText,{x:0.5,y:1,w:9,h:4,fontSize:18,color:'ffffff',fontFace:'Arial'});}else{h2s.forEach(h2=>{const s=pptx.addSlide();s.background={color:'534AB7'};s.addText(h2.textContent,{x:0.5,y:0.5,w:9,h:1.2,fontSize:26,color:'ffffff',bold:true,fontFace:'Arial'});let b='';let el=h2.nextElementSibling;while(el&&el.tagName!=='H2'){b+=el.innerText+'\n';el=el.nextElementSibling;}if(b.trim())s.addText(b.trim(),{x:0.5,y:2,w:9,h:3.5,fontSize:14,color:'ffffff',fontFace:'Arial'});});}pptx.writeFile({fileName:'presentation.pptx'});}
 function dlFile(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeApiModal();closeSaveModal();closeLibSelect();}});
+function fileIcon(name){const ext=name.split('.').pop().toLowerCase();if(['pdf'].includes(ext))return'📕';if(['xlsx','xls','csv'].includes(ext))return'📗';if(['docx','doc'].includes(ext))return'📘';if(['pptx','ppt'].includes(ext))return'📙';return'📄';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeApiModal();closeSaveModal();closeLibSelect();closeProjModal();}});
+document.getElementById('proj-name-input').addEventListener('keydown',e=>{if(e.key==='Enter')createProject();});
 </script>
 </body>
 </html>
